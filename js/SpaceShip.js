@@ -3,13 +3,13 @@ const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST; //Acceler
 /*------------------------------------NAVE----------------------------*/
 class SpaceShip extends SpaceObject {
 	
-	constructor(scene,x,y,z,shadow_flag) {
+	constructor(scene,x,y,z,shadow_flag,wireframe_flag,n_lives) {
 		'use strict';
 		
 		super(scene);
-		this.basic_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-		this.phong_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess:70, specular:0x111111, shading:THREE.SmoothShading });
-		this.lambert_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true});
+		this.basic_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: wireframe_flag});
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: wireframe_flag, shininess:70, specular:0x111111, shading:THREE.SmoothShading });
+		this.lambert_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: wireframe_flag});
 		
 		this.material = this.basic_material;
 		
@@ -18,12 +18,14 @@ class SpaceShip extends SpaceObject {
 		this.addWingSupport(8, 0, 0);
 		this.addShipWing(13, -3,7);
 		this.addShipWing(-13, -3,7);
-		this.addShipCannon(0, 10 ,-8);
+		this.addShipLamp(0, 10 ,-8);
 		
-		this.radius = 25;
+		this.radius = 20;
 		//this.addSphere(this.radius);
 		
 		this.setPosition(x,y,z);
+		
+		this.setMaxLives(3);
 		
 		this.changeShadow(shadow_flag);
 	}
@@ -171,7 +173,7 @@ class SpaceShip extends SpaceObject {
 		this.add(mesh);
 	}
 
-	addShipCannon(x, y ,z){
+	addShipLamp(x, y ,z){
 		'use strict'
 		var geometry = this.createCubeGeometry(4,4,3);		
 		mesh = new THREE.Mesh(geometry, this.material);
@@ -179,6 +181,16 @@ class SpaceShip extends SpaceObject {
 		
 		
 		this.add(mesh);
+	}
+	
+	//SPOTLIGHT
+	addLight(light) {
+		super.addLight(light);
+		
+		this.spotlight.target.position.set(0,0,-boardHeight/2);
+		this.add(this.spotlight.target);
+		
+		this.spotlight.position.set(0, 10, -20);
 	}
 	
 	//ACCELERATION FUNCTIONS//
@@ -221,5 +233,6 @@ class SpaceShip extends SpaceObject {
 		}
 		
 		super.update(deltatime);
+		//this.spotlight.target.updateMatrixWorld();
 	}
 }

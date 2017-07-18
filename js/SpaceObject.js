@@ -5,6 +5,7 @@ class SpaceObject extends THREE.Object3D {
 		this.radius = 0;
 		
 		this.camera;
+		this.spotlight;
 		
 		this.last_position_x = this.position.x;
 		this.last_position_y = this.position.y;
@@ -31,11 +32,45 @@ class SpaceObject extends THREE.Object3D {
 		this.phong_material;
 		this.lambert_material;
 		
+		this.max_lives = 1;
+		this.lives = this.max_lives;
+		
 		scene.add(this);
 	}
 	
 	remove() {
 		scene.remove(this);
+	}
+	
+	//LIVES
+	getLives() {
+		return this.lives;
+	}
+	
+	setLives(lives) {
+		this.lives = lives;
+	}
+	
+	setMaxLives(max_lives) {
+		this.max_lives = max_lives;
+		this.lives = max_lives;
+	}
+	
+	regenerateLive() {
+		this.lives++;
+	}
+	
+	regenerateLives() {
+		this.lives = this.max_lives;
+	}
+	
+	crash() {
+		this.lives--;
+		if(this.lives == 0) {
+			this.remove();
+			return "dead";
+		}
+		return "not dead";
 	}
 	
 	//MESH
@@ -57,7 +92,7 @@ class SpaceObject extends THREE.Object3D {
 		}
 	}
 	
-	//CAMERA
+	//CAMERA && Spotlight
 	getCamera() {
 		return this.camera;
 	}
@@ -72,6 +107,25 @@ class SpaceObject extends THREE.Object3D {
 		this.camera.position.set(0, 14, 50);
 		
 		this.add(camera);
+	}
+	
+	toggleLight() {
+		this.spotlight.visible = !this.spotlight.visible;
+	}
+	
+	addLight(light) {
+		this.spotlight = light;
+
+		this.spotlight.castShadow = true;
+	
+		//this.spotlight.shadow.mapSize.width = 1024;
+		//this.spotlight.shadow.mapSize.height = 1024;
+
+		//this.spotlight.shadow.camera.near = 500;
+		//this.spotlight.shadow.camera.far = 4000;
+		//this.spotlight.shadow.camera.fov = 30;
+
+		this.add(this.spotlight);
 	}
 	
 	//RADIUS//
@@ -289,7 +343,6 @@ class SpaceObject extends THREE.Object3D {
 		this.position.x += (1/2)*this.speed_x*deltatime;
 		this.position.y += (1/2)*this.speed_y*deltatime;
 		this.position.z += (1/2)*this.speed_z*deltatime;
-		
 		
 		this.updateMatrix();
 	}

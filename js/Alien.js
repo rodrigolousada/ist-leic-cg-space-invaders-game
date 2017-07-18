@@ -1,18 +1,18 @@
-const BOTTOMLIMIT = boardHeight/2 - 80;
+const BOTTOMLIMIT = boardHeight/2;// - 80;
 
 /*------------------------------------ALIEN/MONSTER------------------------------*/
 class Alien extends SpaceObject {
 	
-	constructor(scene,x,y,z){
+	constructor(scene,x,y,z,shadow_flag,wireframe_flag){
 		'use strict';
 		
 		super(scene);
-		this.basic_material = new THREE.MeshBasicMaterial({ color: 2600544, wireframe: true });
-		this.phong_material = new THREE.MeshPhongMaterial({ color: 2600544, wireframe: true, shininess: 70, specular:0xffffff, shading:THREE.SmoothShading });
-		this.lambert_material = new THREE.MeshLambertMaterial({ color: 2600544, wireframe: true });
-		this.basic_claw_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-		this.phong_claw_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess: 70, specular:0xfffff, shading:THREE.SmoothShading });
-		this.lambert_claw_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true});
+		this.basic_material = new THREE.MeshBasicMaterial({ color: 2600544, wireframe: wireframe_flag });
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 2600544, wireframe: wireframe_flag, shininess: 70, specular:0xffffff, shading:THREE.SmoothShading });
+		this.lambert_material = new THREE.MeshLambertMaterial({ color: 2600544, wireframe: wireframe_flag });
+		this.basic_claw_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: wireframe_flag });
+		this.phong_claw_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: wireframe_flag, shininess: 70, specular:0xfffff, shading:THREE.SmoothShading });
+		this.lambert_claw_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: wireframe_flag});
 		
 		this.material = this.basic_material;
 		this.claw_material = this.basic_claw_material;
