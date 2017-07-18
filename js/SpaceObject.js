@@ -4,6 +4,8 @@ class SpaceObject extends THREE.Object3D {
 		
 		this.radius = 0;
 		
+		this.camera;
+		
 		this.last_position_x = this.position.x;
 		this.last_position_y = this.position.y;
 		this.last_position_z = this.position.z;
@@ -31,6 +33,23 @@ class SpaceObject extends THREE.Object3D {
 		scene.remove(this);
 	}
 	
+	//CAMERA
+	getCamera() {
+		return this.camera;
+	}
+	
+	setCamera(camera) {
+		this.camera = camera;
+	}
+	
+	addCamera(camera) {
+		this.camera = camera;
+		this.camera.lookAt((0,0,1));
+		this.camera.position.set(0, 14, 50);
+		
+		this.add(camera);
+	}
+	
 	//RADIUS//
 	getRadius() {
 		return this.radius;
@@ -48,6 +67,12 @@ class SpaceObject extends THREE.Object3D {
 		mesh.position.set(0, 0, 0);
 		
 		this.add(mesh);
+	}
+	
+	//COLLISION
+	colided() {
+		this.invertSpeed();
+		this.getBackToLastPosition();
 	}
 	
 	//POSITION//
@@ -241,5 +266,4 @@ class SpaceObject extends THREE.Object3D {
 		this.position.y += (1/2)*this.speed_y*deltatime;
 		this.position.z += (1/2)*this.speed_z*deltatime;
 	}
-
 }

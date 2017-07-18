@@ -7,16 +7,15 @@ class SpaceShip extends SpaceObject {
 		'use strict';
 		
 		super(scene);
-		var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+		this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 		
-		
-		this.addShipBody(material, 0, 0, 0);
-		this.addFrontShip(material,0, 0, -20);
-		this.addWingSupport(material, -8, 0, 0);
-		this.addWingSupport(material, 8, 0, 0);
-		this.addShipWing(material, 13, -3,7);
-		this.addShipWing(material, -13, -3,7);
-		this.addShipCannon(material, 0, 10 ,-8);
+		this.addShipBody(0, 0, 0);
+		this.addFrontShip(0, 0, -20);
+		this.addWingSupport(-8, 0, 0);
+		this.addWingSupport(8, 0, 0);
+		this.addShipWing(13, -3,7);
+		this.addShipWing(-13, -3,7);
+		this.addShipCannon(0, 10 ,-8);
 		
 		this.radius = 25;
 		//this.addSphere(this.radius);
@@ -24,51 +23,55 @@ class SpaceShip extends SpaceObject {
 		this.setPosition(x,y,z);
 	}
 	
+	toggleWireframe() {
+		this.material.wireframe = !this.material.wireframe;
+	}
+	
 	//SHIP PARTS//
-	addShipBody(material, x, y, z) {
+	addShipBody(x, y, z) {
 		'use strict';
 		var geometry = new THREE.CylinderGeometry(8, 8, 20);
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI / 2) ) );
-		mesh = new THREE.Mesh(geometry, material);
+		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 		
 		this.add(mesh);
 	}
 	
-	addFrontShip(material, x, y, z){
+	addFrontShip(x, y, z){
 		'use strict';
 
 		var geometry = new THREE.CylinderGeometry(0,8,20);
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2) ) );
-		mesh = new THREE.Mesh(geometry, material);
+		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 
 		this.add(mesh);
 	}
 	
-	addWingSupport(material, x, y, z) {
+	addWingSupport(x, y, z) {
 		'use strict';
 		
 		var geometry = new THREE.CubeGeometry(5, 2, 2);
-		mesh = new THREE.Mesh(geometry, material);
+		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y - 3, z);
 		
 		this.add(mesh);
 	}
 
-	addShipWing(material, x, y, z) {
+	addShipWing(x, y, z) {
 		'use strict';
 		var geometry = new THREE.CubeGeometry(8, 2, 20);
-		mesh = new THREE.Mesh(geometry, material);
+		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 		
 		this.add(mesh);
 	}
 
-	addShipCannon(material, x, y ,z){
+	addShipCannon(x, y ,z){
 		'use strict'
 		var geometry = new THREE.CubeGeometry(4 ,4 , 3);
-		mesh = new THREE.Mesh(geometry, material);
+		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 		
 		
@@ -92,7 +95,7 @@ class SpaceShip extends SpaceObject {
 		if(this.getAccelerationDirectionX0Z()==Math.PI) this.stopAcceleration();
 	}
 	
-	//UPDATE FUNCTION//
+	//UPDATE FUNCTIONS//
 	update(deltatime) {
 		//Colision with boarders
 		if(this.getPositionX()-17 < -boardWidth/2) {

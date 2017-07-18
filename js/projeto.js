@@ -1,5 +1,5 @@
 /* global THREE*/
-var scene, renderer, material, geometry, mesh; //basic
+var scene, renderer, material, geometry, mesh, wireframe_flag = true; //basic
 var camera, perspectivecamera, perspectivecamera2, orthogonalcamera, width=500, height=300, cameraRatio = (width/height); //cameras
 var board, ship; //objects
 var boardWidth = width-20, boardHeight = height-20; //Board
@@ -36,7 +36,7 @@ function createBoard(width, height) {
 	mesh = new THREE.Mesh(geometry, material);
 	
 	board.add(mesh);
-	board.position.set(0, -100, 0);
+	board.position.set(0, -20, 0);
 	
 	scene.add(board);
 	
@@ -76,8 +76,8 @@ function onResize() {
 		perspectivecamera.updateProjectionMatrix();
 		
 		//PERSPECTIVE CAMERA RESIZE
-		perspectivecamera2.aspect = window.innerWidth /window.innerHeight;
-		perspectivecamera2.updateProjectionMatrix();
+		ship.getCamera().aspect = window.innerWidth /window.innerHeight;
+		ship.getCamera().updateProjectionMatrix();
 	}
 }
 
@@ -87,11 +87,13 @@ function onKeyDown(e) {
 	switch(e.keyCode) {
 		case 65: //A
 		case 97: //a
+			material.wireframe = !material.wireframe;
 			scene.traverse(function (node) {
-				if (node instanceof THREE.Mesh) {
-					node.material.wireframe = !node.material.wireframe;
+				if (node instanceof SpaceObject) {
+					node.toggleWireframe();
 				}
 			});
+			wireframe_flag = !wireframe_flag;
 			break;
 		case 49: //1
 			camera=orthogonalcamera;
@@ -100,7 +102,7 @@ function onKeyDown(e) {
 			camera=perspectivecamera;
 			break;
 		case 51: //3
-			camera=perspectivecamera2;
+			camera=ship.getCamera();
 			break;
 		case 37: //left
 			ship.accelerateLeft()
@@ -110,7 +112,7 @@ function onKeyDown(e) {
 			break;
 		case 66: //B
 		case 98: //b
-			objects.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25));
+			objects.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25, wireframe_flag));
 			break;
 			
 	}
@@ -151,7 +153,6 @@ function createScene() {
 	objects.push(new Alien(scene, 50, 0, -100));
 	objects.push(new Alien(scene, -50, 0, -100));
 	objects.push(new Alien(scene, -150, 0, -100));
-
 }
 
 function createCameras() {
@@ -181,12 +182,7 @@ function createCameras() {
 	perspectivecamera.lookAt(scene.position);
 	
 	//THIRD CAMERA - PERPECTIVE & MOVEL//
-	perspectivecamera2 = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-	perspectivecamera2.position.x = ship.getPositionX();
-	perspectivecamera2.position.y = ship.getPositionY() + 15;
-	perspectivecamera2.position.z = ship.getPositionZ() + 50;
-	perspectivecamera2.lookAt((0,0,1));
-	
+	ship.addCamera(new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000));
 }
 
 /* ------------------------------------------------------------------------------------------- */
@@ -204,21 +200,19 @@ function animate() {
 	var i,j;
 	var deltatime = clock.getDelta();
 	
-	//CHECKING COLISIONS//
+	//CHECKING COLLISIONS//
 	for(i=0; i < objects.length; i++) {
 		for(j=i+1; j < objects.length; j++) {
 			if(objects[i].getRadius()+objects[j].getRadius() > distanceVector(objects[i].getPosition(),objects[j].getPosition())) {
 				if(objects[i] instanceof Alien && objects[j] instanceof Alien) { //Aliens with Aliens
-					objects[i].invertSpeed();
-					objects[j].invertSpeed();
-					objects[i].getBackToLastPosition();
-					objects[j].getBackToLastPosition();
+					objects[i].colided();
+					objects[j].colided();
 				}
 				else if((objects[i] instanceof Bullet && objects[j] instanceof Alien)|| (objects[j] instanceof Bullet && objects[i] instanceof Alien)) { //Aliens with Bullets
 					objects[i].remove();
 					objects[j].remove();
 					objects.splice(i,1);
-					if(i<j) j--;
+					j--;
 					objects.splice(j,1);
 					break;
 				}
@@ -232,11 +226,6 @@ function animate() {
 	for(i = 0; i < objects.length; i++) {
 		if(objects[i].update(deltatime)=="removed") objects.splice(i,1);
 	}
-	
-	//UPDATING PERSPECTIVE CAMERA 2 POSITION//
-	perspectivecamera2.position.x = ship.getPositionX();
-	perspectivecamera2.position.y = ship.getPositionY() + 15;
-	perspectivecamera2.position.z = ship.getPositionZ() + 50;
 	
 	render();
 
