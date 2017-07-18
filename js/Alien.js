@@ -18,7 +18,7 @@ class Alien extends SpaceObject {
 		this.addAlienClaw(material2, 13, 0, 8);
 		this.addAlienClaw(material2, -13, 0, 8);
 		
-		this.radius = 16;
+		this.radius = 17;
 		//this.addSphere(this.radius);
 		
 		this.setSpeed(Math.random()*Math.PI*2, 20);
@@ -62,11 +62,13 @@ class Alien extends SpaceObject {
 	
 	update(deltatime) {
 		//Collision with boarders
-		if(this.getPositionX()-this.getRadius() < -boardWidth/2 || this.getPositionX()+this.getRadius() > boardWidth/2) {
+		if(this.getPositionX()-this.getRadius() <= -boardWidth/2 || this.getPositionX()+this.getRadius() >= boardWidth/2) {
 			this.setSpeed(Math.PI - this.getSpeedDirectionX0Z(), this.getSpeed());
+			this.getBackToLastPosition();
 		}
-		else if(this.getPositionZ()+this.getRadius() > BOTTOMLIMIT || this.getPositionZ()-this.getRadius() < -boardHeight/2) {
+		else if(this.getPositionZ()+this.getRadius() >= BOTTOMLIMIT || this.getPositionZ()-this.getRadius() <= -boardHeight/2) {
 			this.setSpeed(-this.getSpeedDirectionX0Z(), this.getSpeed());
+			this.getBackToLastPosition();
 		}		
 		
 		super.update(deltatime);

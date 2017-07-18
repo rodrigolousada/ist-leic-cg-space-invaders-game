@@ -4,6 +4,10 @@ class SpaceObject extends THREE.Object3D {
 		
 		this.radius = 0;
 		
+		this.last_position_x = this.position.x;
+		this.last_position_y = this.position.y;
+		this.last_position_z = this.position.z;
+		
 		this.speed = 0;
 		this.speed_x = 0;
 		this.speed_y = 0;
@@ -38,12 +42,18 @@ class SpaceObject extends THREE.Object3D {
 	
 	addSphere(radius){
 		'use strict';
-		var geometry = new THREE.SphereGeometry(radius);
+		var geometry = new THREE.SphereGeometry(radius,60);
 		var material = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true });
 		var mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(0, 0, 0);
 		
 		this.add(mesh);
+	}
+	
+	//COLLISION
+	colided() {
+		this.invertSpeed();
+		this.getBackToLastPosition();
 	}
 	
 	//POSITION//
@@ -84,6 +94,12 @@ class SpaceObject extends THREE.Object3D {
 		this.stopAcceleration();
 	}
 
+	getBackToLastPosition() {
+		this.position.x = this.last_position_x;
+		this.position.y = this.last_position_y;
+		this.position.z = this.last_position_z;
+	}
+	
 
 
 	//SPEED//
@@ -212,7 +228,13 @@ class SpaceObject extends THREE.Object3D {
 	
 	
 	//UDPATE FUNCTIONS//
-	update(deltatime) { //EQUACAO DA VELOCIDADE		
+	update(deltatime) { 
+		//UPDATING LAST POSITION
+		this.last_position_x = this.position.x;
+		this.last_position_y = this.position.y;
+		this.last_position_z = this.position.z;
+		
+		//EQUACAO DA VELOCIDADE		
 		this.position.x += (1/2)*this.speed_x*deltatime;
 		this.position.y += (1/2)*this.speed_y*deltatime;
 		this.position.z += (1/2)*this.speed_z*deltatime;

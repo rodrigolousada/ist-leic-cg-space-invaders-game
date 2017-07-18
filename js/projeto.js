@@ -1,11 +1,10 @@
 /* global THREE*/
-var scene, renderer, material, geometry, mesh; //basic
+var scene, renderer, material, geometry, mesh, wireframe_flag = true; //basic
 var camera, perspectivecamera, perspectivecamera2, orthogonalcamera, width=500, height=300, cameraRatio = (width/height); //cameras
 var board, ship; //objects
 var boardWidth = width-20, boardHeight = height-20; //Board
 
-var bullets = [];
-var aliens = [];
+var objects = [];
 
 var clock; //clock
 
@@ -37,7 +36,7 @@ function createBoard(width, height) {
 	mesh = new THREE.Mesh(geometry, material);
 	
 	board.add(mesh);
-	board.position.set(0, -100, 0);
+	board.position.set(0, -20, 0);
 	
 	scene.add(board);
 	
@@ -93,6 +92,7 @@ function onKeyDown(e) {
 					node.material.wireframe = !node.material.wireframe;
 				}
 			});
+			wireframe_flag = !wireframe_flag;
 			break;
 		case 49: //1
 			camera=orthogonalcamera;
@@ -111,7 +111,7 @@ function onKeyDown(e) {
 			break;
 		case 66: //B
 		case 98: //b
-			bullets.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25));
+			objects.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25, wireframe_flag));
 			break;
 			
 	}
@@ -144,14 +144,14 @@ function createScene() {
 	
 	//Creating Objects//
 	ship = new SpaceShip(scene, 0, 0, 100);
-	aliens.push(new Alien(scene, 150, 0, -50));
-	aliens.push(new Alien(scene, 50, 0, -50));
-	aliens.push(new Alien(scene, -50, 0, -50));
-	aliens.push(new Alien(scene, -150, 0, -50));
-	aliens.push(new Alien(scene, 150, 0, -100));
-	aliens.push(new Alien(scene, 50, 0, -100));
-	aliens.push(new Alien(scene, -50, 0, -100));
-	aliens.push(new Alien(scene, -150, 0, -100));
+	objects.push(new Alien(scene, 150, 0, -50));
+	objects.push(new Alien(scene, 50, 0, -50));
+	objects.push(new Alien(scene, -50, 0, -50));
+	objects.push(new Alien(scene, -150, 0, -50));
+	objects.push(new Alien(scene, 150, 0, -100));
+	objects.push(new Alien(scene, 50, 0, -100));
+	objects.push(new Alien(scene, -50, 0, -100));
+	objects.push(new Alien(scene, -150, 0, -100));
 
 }
 
@@ -205,39 +205,31 @@ function animate() {
 	var i,j;
 	var deltatime = clock.getDelta();
 	
-	//CHECKING COLISIONS//
-	//Aliens with Bullets
-	for(i=0; i < aliens.length; i++) {
-		for(j=0; j < bullets.length; j++) {
-			if(aliens[i].getRadius()+bullets[j].getRadius() > distanceVector(aliens[i].getPosition(),bullets[j].getPosition())) {
-				console.log("spliced");
-				aliens[i].remove();
-				bullets[j].remove();
-				aliens.splice(i,1);
-				bullets.splice(j,1);
-				break;
-			}
-		}
-	}
-	
-	//Aliens with Aliens
-	for(i=0; i < aliens.length; i++) {
-		for(j=i+1; j < aliens.length; j++) {
-			if(aliens[i].getRadius()+aliens[j].getRadius() > distanceVector(aliens[i].getPosition(),aliens[j].getPosition())) {
-				aliens[i].invertSpeed();
-				aliens[j].invertSpeed();
+	//CHECKING COLLISIONS//
+	for(i=0; i < objects.length; i++) {
+		for(j=i+1; j < objects.length; j++) {
+			if(objects[i].getRadius()+objects[j].getRadius() > distanceVector(objects[i].getPosition(),objects[j].getPosition())) {
+				if(objects[i] instanceof Alien && objects[j] instanceof Alien) { //Aliens with Aliens
+					objects[i].colided();
+					objects[j].colided();
+				}
+				else if((objects[i] instanceof Bullet && objects[j] instanceof Alien)|| (objects[j] instanceof Bullet && objects[i] instanceof Alien)) { //Aliens with Bullets
+					objects[i].remove();
+					objects[j].remove();
+					objects.splice(i,1);
+					if(i<j) j--;
+					objects.splice(j,1);
+					break;
+				}
 			}
 		}
 	}
 	
 	
-	//UPDATING SHIP & ALIEN POSITIONS//
+	//UPDATING OBJECTS POSITIONS//
 	ship.update(deltatime);
-	for(i = 0; i < bullets.length; i++) {
-		if(bullets[i].update(deltatime)=="removed") bullets.splice(i,1);
-	}
-	for(i = 0; i < aliens.length; i++) {
-		aliens[i].update(deltatime);
+	for(i = 0; i < objects.length; i++) {
+		if(objects[i].update(deltatime)=="removed") objects.splice(i,1);
 	}
 	
 	//UPDATING PERSPECTIVE CAMERA 2 POSITION//
