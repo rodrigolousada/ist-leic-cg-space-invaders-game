@@ -1,6 +1,6 @@
 /* global THREE*/
 
-var camera, perspectivecamera, ortogonalcamera, scene, renderer, material, geometry, mesh, board, alien, ship;
+var camera, perspectivecamera, ortogonalcamera, scene, renderer, material, geometry, mesh, board, alien, ship, monster;
 var oldTime = 0;
 var boardWidth = 1300, boardHeight = 900, cameraRatio = (boardWidth/boardHeight);
 const ACCELERATIONCONST=100 , FRICTIONCOEF = (-0,5);
@@ -11,21 +11,57 @@ var clock, newTime, delta, speed=0, acceleration=0, direction = 0, caughtleft=0,
 /* ------------------------------------OBJECTS FUNCTIONS-------------------------------------- */
 /* ------------------------------------------------------------------------------------------- */
 
-function addShipBody(obj, x, y, z) {
+/*------------------------------------NAVE----------------------------*/
+
+function addWingSupport(obj, x, y, z) {
 	'use strict';
-	geometry = new THREE.CubeGeometry(60, 2, 20);
+	
+	geometry = new THREE.CubeGeometry(4, 4, 2);
+	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x, y - 3, z);
+	obj.add(mesh);
+}
+
+function addFrontShip(obj, x, y, z){
+	'use strict';
+
+	geometry = new THREE.CylinderGeometry(1,8,10);
+	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x, y, z);
+
+	obj.add(mesh);
+}
+
+function addShipWing(obj, x, y, z) {
+	'use strict';
+	geometry = new THREE.CubeGeometry(8, 30, 2);
+	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y, z);
 	
 	obj.add(mesh);
 }
 
-function addShipLeg(obj, x, y, z) {
+function addShipBody(obj, x, y, z) {
 	'use strict';
-	
-	geometry = new THREE.CubeGeometry(2, 6, 2);
+	geometry = new THREE.CylinderGeometry(8, 8, 30);
+	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y - 3, z);
+	mesh.position.set(x, y, z);
+	
+	obj.add(mesh);
+}
+
+function addShipBullets(obj, x, y ,z){
+	'use strict'
+	geometry = new THREE.CubeGeometry(4 ,4 , 3);
+	material = new THREE.MeshBasicMaterial({ color: 0x0000FF, wireframe: true});
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x, y, z);
+	
+	
 	obj.add(mesh);
 }
 
@@ -38,14 +74,74 @@ function createShip(x, y, z) {
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	
 	addShipBody(ship, 0, 0, 0);
-	addShipLeg(ship, -25, -1, -8);
-	addShipLeg(ship, -25, -1, 8);
-	addShipLeg(ship, 25, -1, 8);
-	addShipLeg(ship, 25, -1, -8);
+	addFrontShip(ship,0, 20, 0);
+	addWingSupport(ship, -10, 0, 0);
+	addWingSupport(ship, 10, 0, 0);
+	addShipWing(ship, 16, -10,0);
+	addShipWing(ship, -16, -10,0);
+	addShipBullets(ship, 0, 15 ,10);
 	
 	ship.position.set(x,y,z);
 	
 	scene.add(ship);
+}
+
+/*------------------------------------ALIEN--------------------------------*/
+
+function addAlienSupport(obj, x, y, z){
+	geometry = new THREE.CubeGeometry(4,2,2);
+	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: false});
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x,y,z);
+	obj.add(mesh);
+}
+
+function addAlienClaw(obj, x, y, z){
+	'use strict';
+
+	geometry = new THREE.CylinderGeometry(0,2,10,70);
+	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x, y, z);
+	obj.add(mesh);
+}
+
+
+function addAlienArm(obj, x, y, z){
+	'use strict';
+	geometry = new THREE.CylinderGeometry(3,3,10, 70);
+	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x, y, z);
+	obj.add(mesh);
+}
+
+function addAlienBody(obj, x, y, z){
+	'use strict';
+	geometry = new THREE.SphereGeometry(8,30,60);
+	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
+	mesh = new THREE.Mesh(geometry, material);
+	mesh.position.set(x, y, z);
+	obj.add(mesh);
+}
+
+function createMonster(x, y, z) {
+	'use strict';
+	
+	monster = new THREE.Object3D();
+	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+	
+	addAlienArm(monster, 13, 10, 8);
+	addAlienArm(monster, -13, 10, 8);
+	addAlienSupport(monster, 8, 8, 8);
+	addAlienSupport(monster, -8, 8, 8);
+	addAlienBody(monster, 0, 0, 0);
+	addAlienClaw(monster, 13, 20, 8);
+	addAlienClaw(monster, -13, 20, 8);
+	
+	monster.position.set(x,y,z);
+	
+	scene.add(monster);
 }
 
 function createAlien(x, y, z) {
@@ -64,6 +160,7 @@ function createAlien(x, y, z) {
 	scene.add(alien);
 }
 
+/*------------------------------------ESPAÇO DE JOGO----------------------------*/
 
 function createBoard(width, height) {
 	'use strict';
@@ -234,6 +331,7 @@ function createScene() {
 	createBoard(boardWidth, boardHeight);
 	createShip(0, 0, 0);
 	createAlien(0, 0, 15);
+	createMonster(0, 0, -50);
 	
 }
 
