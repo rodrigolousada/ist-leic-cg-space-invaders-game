@@ -54,7 +54,40 @@ class SpaceShip extends SpaceObject {
 	addWingSupport(x, y, z) {
 		'use strict';
 		
-		var geometry = new THREE.CubeGeometry(5, 2, 2);
+		var geometry = new THREE.Geometry();
+		
+		//Vertices
+		geometry.vertices.push(new THREE.Vector3(2.5,1,1));
+		geometry.vertices.push(new THREE.Vector3(2.5,-1,1));
+		geometry.vertices.push(new THREE.Vector3(-2.5,-1,1));
+		geometry.vertices.push(new THREE.Vector3(-2.5,1,1));
+		geometry.vertices.push(new THREE.Vector3(2.5,1,-1));
+		geometry.vertices.push(new THREE.Vector3(2.5,-1,-1));
+		geometry.vertices.push(new THREE.Vector3(-2.5,-1,-1));
+		geometry.vertices.push(new THREE.Vector3(-2.5,1,-1));
+		
+		//Faces
+		//front
+		geometry.faces.push(new THREE.Face3(4,5,6));
+		geometry.faces.push(new THREE.Face3(6,7,4));
+		//back
+		geometry.faces.push(new THREE.Face3(0,3,2));
+		geometry.faces.push(new THREE.Face3(0,2,1));
+		//left
+		geometry.faces.push(new THREE.Face3(3,7,6));
+		geometry.faces.push(new THREE.Face3(3,6,2));
+		//top
+		geometry.faces.push(new THREE.Face3(0,4,7));
+		geometry.faces.push(new THREE.Face3(0,7,3));
+		//right
+		geometry.faces.push(new THREE.Face3(1,5,4));
+		geometry.faces.push(new THREE.Face3(1,4,0));
+		//bottom
+		geometry.faces.push(new THREE.Face3(1,2,6));
+		geometry.faces.push(new THREE.Face3(1,6,5));
+		
+		geometry.computeFaceNormals();
+		
 		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y - 3, z);
 		
@@ -62,8 +95,41 @@ class SpaceShip extends SpaceObject {
 	}
 
 	addShipWing(x, y, z) {
-		'use strict';
-		var geometry = new THREE.CubeGeometry(8, 2, 20);
+		'use strict';		
+		var geometry = new THREE.Geometry();
+		
+		//Vertices
+		geometry.vertices.push(new THREE.Vector3(4,1,10));
+		geometry.vertices.push(new THREE.Vector3(4,-1,10));
+		geometry.vertices.push(new THREE.Vector3(-4,-1,10));
+		geometry.vertices.push(new THREE.Vector3(-4,1,10));
+		geometry.vertices.push(new THREE.Vector3(4,1,-10));
+		geometry.vertices.push(new THREE.Vector3(4,-1,-10));
+		geometry.vertices.push(new THREE.Vector3(-4,-1,-10));
+		geometry.vertices.push(new THREE.Vector3(-4,1,-10));
+		
+		//Faces
+		//front
+		geometry.faces.push(new THREE.Face3(4,5,6));
+		geometry.faces.push(new THREE.Face3(6,7,4));
+		//back
+		geometry.faces.push(new THREE.Face3(0,3,2));
+		geometry.faces.push(new THREE.Face3(0,2,1));
+		//left
+		geometry.faces.push(new THREE.Face3(3,7,6));
+		geometry.faces.push(new THREE.Face3(3,6,2));
+		//top
+		geometry.faces.push(new THREE.Face3(0,4,7));
+		geometry.faces.push(new THREE.Face3(0,7,3));
+		//right
+		geometry.faces.push(new THREE.Face3(1,5,4));
+		geometry.faces.push(new THREE.Face3(1,4,0));
+		//bottom
+		geometry.faces.push(new THREE.Face3(1,2,6));
+		geometry.faces.push(new THREE.Face3(1,6,5));
+		
+		geometry.computeFaceNormals();
+		
 		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 		
@@ -72,7 +138,40 @@ class SpaceShip extends SpaceObject {
 
 	addShipCannon(x, y ,z){
 		'use strict'
-		var geometry = new THREE.CubeGeometry(4 ,4 , 3);
+		var geometry = new THREE.Geometry();
+		
+		//Vertices
+		geometry.vertices.push(new THREE.Vector3(2,2,1.5));
+		geometry.vertices.push(new THREE.Vector3(2,-2,1.5));
+		geometry.vertices.push(new THREE.Vector3(-2,-2,1.5));
+		geometry.vertices.push(new THREE.Vector3(-2,2,1.5));
+		geometry.vertices.push(new THREE.Vector3(2,2,-1.5));
+		geometry.vertices.push(new THREE.Vector3(2,-2,-1.5));
+		geometry.vertices.push(new THREE.Vector3(-2,-2,-1.5));
+		geometry.vertices.push(new THREE.Vector3(-2,2,-1.5));
+		
+		//Faces
+		//front
+		geometry.faces.push(new THREE.Face3(4,5,6));
+		geometry.faces.push(new THREE.Face3(6,7,4));
+		//back
+		geometry.faces.push(new THREE.Face3(0,3,2));
+		geometry.faces.push(new THREE.Face3(0,2,1));
+		//left
+		geometry.faces.push(new THREE.Face3(3,7,6));
+		geometry.faces.push(new THREE.Face3(3,6,2));
+		//top
+		geometry.faces.push(new THREE.Face3(0,4,7));
+		geometry.faces.push(new THREE.Face3(0,7,3));
+		//right
+		geometry.faces.push(new THREE.Face3(1,5,4));
+		geometry.faces.push(new THREE.Face3(1,4,0));
+		//bottom
+		geometry.faces.push(new THREE.Face3(1,2,6));
+		geometry.faces.push(new THREE.Face3(1,6,5));
+		
+		geometry.computeFaceNormals();
+		
 		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 		
