@@ -33,6 +33,9 @@ class DirectionalStar extends Star {
 		super(scene, light_color, light_intensity, x, y, z);
 		
 		this.light = new THREE.DirectionalLight(this.light_color, this.light_intensity);
+		this.light.target.position.set(boardWidth/2, 0 ,0);
+		this.add(this.light.target);
+		//this.light.target = SpaceShip; (falta receber objecto)
 		this.add(this.light);
 	}
 }

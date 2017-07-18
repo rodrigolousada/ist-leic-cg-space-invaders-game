@@ -8,7 +8,7 @@ class SpaceShip extends SpaceObject {
 		
 		super(scene);
 		this.basic_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-		this.phong_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess:70, specular:0x111111, shading:THREE.FlatShading });
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess:70, specular:0x111111, shading:THREE.SmoothShading });
 		this.lambert_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true});
 		
 		this.material = this.basic_material;
@@ -62,8 +62,9 @@ class SpaceShip extends SpaceObject {
 		geometry.faces.push(new THREE.Face3(1,2,6));
 		geometry.faces.push(new THREE.Face3(1,6,5));
 		
+		geometry.computeVertexNormals();
 		geometry.computeFaceNormals();
-		//geometry.computeVertexNormals();
+		
 		return geometry;
 	}
 	
@@ -142,8 +143,8 @@ class SpaceShip extends SpaceObject {
 		geometry.faces.push(new THREE.Face3(1,8,17));
 		geometry.faces.push(new THREE.Face3(1,17,10));		
 		
+		geometry.computeVertexNormals();
 		geometry.computeFaceNormals();
-		//geometry.computeVertexNormals();
 		
 		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
