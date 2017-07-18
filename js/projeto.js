@@ -1,157 +1,15 @@
 /* global THREE*/
+var scene, renderer, material, geometry, mesh; //basic
+var camera, perspectivecamera, perspectivecamera2, orthogonalcamera; //cameras
+var board, alien1, alien2, alien3, alien4, alien5, alien6, alien7, alien8, ship; //objects
+var boardWidth = 500, boardHeight = 300, cameraRatio = (boardWidth/boardHeight); //Board
+const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST; //Acceleration
 
-var camera, perspectivecamera, ortogonalcamera, scene, renderer, material, geometry, mesh, board, alien1, alien2, alien3, alien4, alien5, alien6, alien7, alien8, ship;
-var oldTime = 0;
-var boardWidth = 500, boardHeight = 300, cameraRatio = (boardWidth/boardHeight);
-const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST;
-
-var clock, newTime, delta, speed=0, acceleration=0, direction = 0, caughtleft=0, caughtright=0;
+var clock; //clock
 
 /* ------------------------------------------------------------------------------------------- */
 /* ------------------------------------OBJECTS FUNCTIONS-------------------------------------- */
 /* ------------------------------------------------------------------------------------------- */
-
-/*------------------------------------NAVE----------------------------*/
-
-function addWingSupport(obj, x, y, z) {
-	'use strict';
-	
-	geometry = new THREE.CubeGeometry(5, 2, 2);
-	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y - 3, z);
-	
-	obj.add(mesh);
-}
-
-function addFrontShip(obj, x, y, z){
-	'use strict';
-
-	geometry = new THREE.CylinderGeometry(0,8,20);
-	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2) ) );
-	//geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, 0) );
-	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y, z);
-
-	obj.add(mesh);
-}
-
-function addShipWing(obj, x, y, z) {
-	'use strict';
-	geometry = new THREE.CubeGeometry(8, 2, 20);
-	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y, z);
-	
-	obj.add(mesh);
-}
-
-function addShipBody(obj, x, y, z) {
-	'use strict';
-	geometry = new THREE.CylinderGeometry(8, 8, 20);
-	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI / 2) ) );
-	//geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, 0 ) );
-	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y, z);
-	
-	obj.add(mesh);
-}
-
-function addShipBullets(obj, x, y ,z){
-	'use strict'
-	geometry = new THREE.CubeGeometry(4 ,4 , 3);
-	material = new THREE.MeshBasicMaterial({ color: 0x0000FF, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y, z);
-	
-	
-	obj.add(mesh);
-}
-
-function createShip(x, y, z) {
-	'use strict';
-	
-	ship = new THREE.Object3D();
-	
-	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-	
-	addShipBody(ship, 0, 0, 0);
-	addFrontShip(ship,0, 0, -20);
-	addWingSupport(ship, -8, 0, 0);
-	addWingSupport(ship, 8, 0, 0);
-	addShipWing(ship, 13, -3,7);
-	addShipWing(ship, -13, -3,7);
-	addShipBullets(ship, 0, 10 ,-8);
-	
-	ship.position.set(x,y,z);
-	
-	scene.add(ship);
-}
-
-/*------------------------------------ALIEN/MONSTER------------------------------*/
-
-function addAlienSupport(obj, x, y, z){
-	geometry = new THREE.CubeGeometry(4,2,2);
-	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x,y,z);
-	obj.add(mesh);
-}
-
-function addAlienClaw(obj, x, y, z){
-	'use strict';
-
-	geometry = new THREE.CylinderGeometry(0,2,10/*,40*/);
-	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI/2) );
-	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y, z);
-	obj.add(mesh);
-}
-
-
-function addAlienArm(obj, x, y, z){
-	'use strict';
-	geometry = new THREE.CylinderGeometry(3,3,10 /*,60*/);
-	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2)) );
-	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y, z);
-	obj.add(mesh);
-}
-
-function addAlienBody(obj, x, y, z){
-	'use strict';
-	geometry = new THREE.SphereGeometry(8,30 /*,60*/);
-	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(x, y, z);
-	obj.add(mesh);
-}
-
-function createMonster(x, y, z) {
-	'use strict';
-	
-	var monster = new THREE.Object3D();
-	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-	
-	addAlienArm(monster, 13, 0, 5);
-    addAlienArm(monster, -13, 0, 5);
-    addAlienSupport(monster, 8, 0, 5);
-    addAlienSupport(monster, -8, 0, 5);
-    addAlienBody(monster, 0, 0, 0);
-    addAlienClaw(monster, 13, 0, 15);
-    addAlienClaw(monster, -13, 0, 15);
-	
-	monster.position.set(x,y,z);
-	
-	scene.add(monster);
-	
-	return monster;
-}
-
 /*------------------------------------ESPAÇO DE JOGO----------------------------*/
 
 function createBoard(width, height) {
@@ -179,29 +37,7 @@ function animate() {
 	
 	var deltatime = clock.getDelta();
 	
-	if(acceleration*speed<0) {
-		acceleration = (Math.abs(acceleration)/acceleration)*DEACCELERATIONCONST;
-	}
-	else if(acceleration!=0 && speed==0) {
-		acceleration = (Math.abs(acceleration)/acceleration)*ACCELERATIONCONST;
-	}
-	speed+=(1/2)*acceleration*deltatime;
-	ship.position.x += speed*deltatime;
-	
-	/*if(ship.position.x<=(boardWidth/-(2)) && caughtleft==0) {
-		caughtleft++;
-		speed=0;
-		accelaration=0;
-		ship.position.x+=5;
-	}
-	else if(!(ship.position.x<=(boardWidth/-(2))) && !(caughtleft==0)) caughtleft=0;
-	else if(ship.position.x>=(boardWidth/(2)) && caughtright==0) {
-		caughtright++;
-		speed=0;
-		accelaration=0;
-		ship.position.x-=5;
-	}
-	else if(!(ship.position.x>=(boardWidth/(2))) && !(caughtright==0)) caughtright=0;*/
+	ship.update(perspectivecamera2, deltatime);
 	
 	render();
 
@@ -212,22 +48,29 @@ function onResize() {
 	'use strict';
 	
 	if(window.innerWidth>0 && window.innerHeight>0){
+		
+		//ORTOGONAL CAMERA RESIZE
 		var newAspectRatio = window.innerWidth/window.innerHeight;
 		console.log(newAspectRatio);
 		renderer.setSize(window.innerWidth,window.innerHeight);
 		if (newAspectRatio > cameraRatio){
-			camera.left = (boardHeight * newAspectRatio)/(-2);
-			camera.right = (boardHeight * newAspectRatio)/2;
-			camera.bottom = (boardHeight)/(-2);
-			camera.top = (boardHeight)/2;
+			orthogonalcamera.left = (boardHeight * newAspectRatio)/(-2);
+			orthogonalcamera.right = (boardHeight * newAspectRatio)/2;
+			orthogonalcamera.bottom = (boardHeight)/(-2);
+			orthogonalcamera.top = (boardHeight)/2;
 		}
 		else{
-			camera.left = (boardWidth)/(-2);  //para a camera ficar com a proporcao do campo de jogo em termos de largura
-			camera.right = (boardWidth)/2;
-			camera.bottom = (boardWidth/ newAspectRatio)/(-2);
-			camera.top = (boardWidth/ newAspectRatio)/2;
+			orthogonalcamera.left = (boardWidth)/(-2);  //para a camera ficar com a proporcao do campo de jogo em termos de largura
+			orthogonalcamera.right = (boardWidth)/2;
+			orthogonalcamera.bottom = (boardWidth/ newAspectRatio)/(-2);
+			orthogonalcamera.top = (boardWidth/ newAspectRatio)/2;
 		}
-		camera.updateProjectionMatrix();
+		orthogonalcamera.updateProjectionMatrix();
+		
+		
+		//PERSPECTIVE STATIC CAMERA RESIZE
+		
+		//PERSPECTIVE CAMERA RESIZE
 	}
 }
 
@@ -243,28 +86,20 @@ function onKeyDown(e) {
 				}
 			});
 			break;
-		case 83: //S
-		case 115: //s
-			/*alien.userData.jumping = !alien.userData.jumping;
-			if(clock.running==true) clock.stop();
-			else clock.start();*/
+		case 49: //1
+			camera=orthogonalcamera;
 			break;
-		case 86: //V
-		case 118: //v
-			if(camera==perspectivecamera) {
-				camera=ortogonalcamera;
-				camera.lookAt(scene.position);
-			}
-			else {
-				camera=perspectivecamera;
-				camera.lookAt(scene.position);
-			}
+		case 50: //2
+			camera=perspectivecamera;
+			break;
+		case 51: //3
+			camera=perspectivecamera2;
 			break;
 		case 37: //left
-			acceleration=(-ACCELERATIONCONST);
+			ship.setAcceleration(-ACCELERATIONCONST);
 			break;
 		case 39: //right
-			acceleration=ACCELERATIONCONST;
+			ship.setAcceleration(ACCELERATIONCONST);
 			break;
 	}
 }
@@ -275,10 +110,8 @@ function onKeyUp(e) {
 	
 	switch(e.keyCode) {
 		case 37: //left
-			acceleration = 0;
-			break;
 		case 39: //right
-			acceleration = 0;
+			ship.stopAcceleration();
 			break;
 	}
 }
@@ -302,41 +135,53 @@ function createScene() {
 	scene.add(new THREE.AxisHelper(10));
 	
 	createBoard(boardWidth, boardHeight);
-	createShip(0, 0, 100);
-	alien1 = createMonster(150, 0, -50);
-	alien2 = createMonster(50, 0, -50);
-	alien3 = createMonster(-50, 0, -50);
-	alien4 = createMonster(-150, 0, -50);
-	alien5 = createMonster(150, 0, -100);
-	alien6 = createMonster(50, 0, -100);
-	alien7 = createMonster(-50, 0, -100);
-	alien8 = createMonster(-150, 0, -100);
+	
+	//Creating Objects//
+	ship = new SpaceShip(scene, 0, 0, 100);
+	alien1 = new Alien(scene, 150, 0, -50);
+	alien2 = new Alien(scene, 50, 0, -50);
+	alien3 = new Alien(scene, -50, 0, -50);
+	alien4 = new Alien(scene, -150, 0, -50);
+	alien5 = new Alien(scene, 150, 0, -100);
+	alien6 = new Alien(scene, 50, 0, -100);
+	alien7 = new Alien(scene, -50, 0, -100);
+	alien8 = new Alien(scene, -150, 0, -100);
 
 	
 }
 
 function createCameras() {
 	'use strict';
-	perspectivecamera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-	perspectivecamera.position.x = 0;
-	perspectivecamera.position.y = 50;
-	perspectivecamera.position.z = 50;
-	perspectivecamera.lookAt(scene.position);
 	
 	
+	//FIRST CAMERA - ORTOGONAL//
 	var aspectRatio = window.innerWidth/window.innerHeight;
 	if(aspectRatio > cameraRatio) {
-		ortogonalcamera = new THREE.OrthographicCamera( boardHeight*aspectRatio / (-2), boardHeight*aspectRatio/ (2), boardHeight / 2, boardHeight / (-2), 1, 1000);
+		orthogonalcamera = new THREE.OrthographicCamera( boardHeight*aspectRatio / (-2), boardHeight*aspectRatio/ (2), boardHeight / 2, boardHeight / (-2), 1, 1000);
 	}
 	else {
-		ortogonalcamera = new THREE.OrthographicCamera( boardWidth / (-2), boardWidth / (2), (boardWidth/aspectRatio) / 2, (boardWidth/aspectRatio) / (-2), 1, 1000);
+		orthogonalcamera = new THREE.OrthographicCamera( boardWidth / (-2), boardWidth / (2), (boardWidth/aspectRatio) / 2, (boardWidth/aspectRatio) / (-2), 1, 1000);
 	}
-	ortogonalcamera.position.x = 0;
-	ortogonalcamera.position.y = 100;
-	ortogonalcamera.position.z = 0;
-	ortogonalcamera.lookAt(scene.position);
+	orthogonalcamera.position.x = 0;
+	orthogonalcamera.position.y = 100;
+	orthogonalcamera.position.z = 0;
+	orthogonalcamera.lookAt(scene.position);
 	
-	camera=ortogonalcamera;
+	camera=orthogonalcamera; //defining camera as orthogonal
+	
+	//SECOND CAMERA - PERSPECTIVE & STATIC//
+	perspectivecamera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 1000);
+	perspectivecamera.position.x = 0;
+	perspectivecamera.position.y = 220;
+	perspectivecamera.position.z = 150;
+	perspectivecamera.lookAt(scene.position);
+	
+	//THIRD CAMERA - PERPECTIVE & MOVEL//
+	perspectivecamera2 = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+	perspectivecamera2.position.x = 0;
+	perspectivecamera2.position.y = 15;
+	perspectivecamera2.position.z = 150;
+	perspectivecamera2.lookAt((0,0,1));
 	
 }
 
