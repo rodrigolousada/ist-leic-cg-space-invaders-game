@@ -87,9 +87,10 @@ function onKeyDown(e) {
 	switch(e.keyCode) {
 		case 65: //A
 		case 97: //a
+			material.wireframe = !material.wireframe;
 			scene.traverse(function (node) {
-				if (node instanceof THREE.Mesh) {
-					node.material.wireframe = !node.material.wireframe;
+				if (node instanceof SpaceObject) {
+					node.toggleWireframe();
 				}
 			});
 			wireframe_flag = !wireframe_flag;
@@ -184,7 +185,7 @@ function createCameras() {
 	//THIRD CAMERA - PERPECTIVE & MOVEL//
 	perspectivecamera2 = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
 	perspectivecamera2.position.x = ship.getPositionX();
-	perspectivecamera2.position.y = ship.getPositionY() + 15;
+	perspectivecamera2.position.y = ship.getPositionY() + 14;
 	perspectivecamera2.position.z = ship.getPositionZ() + 50;
 	perspectivecamera2.lookAt((0,0,1));
 	
@@ -217,7 +218,7 @@ function animate() {
 					objects[i].remove();
 					objects[j].remove();
 					objects.splice(i,1);
-					if(i<j) j--;
+					j--;
 					objects.splice(j,1);
 					break;
 				}
@@ -234,7 +235,7 @@ function animate() {
 	
 	//UPDATING PERSPECTIVE CAMERA 2 POSITION//
 	perspectivecamera2.position.x = ship.getPositionX();
-	perspectivecamera2.position.y = ship.getPositionY() + 15;
+	perspectivecamera2.position.y = ship.getPositionY() + 14;
 	perspectivecamera2.position.z = ship.getPositionZ() + 50;
 	
 	render();

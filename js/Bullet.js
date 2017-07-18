@@ -5,9 +5,9 @@ class Bullet extends SpaceObject {
 		'use strict';
 		
 		super(scene);
-		var material = new THREE.MeshBasicMaterial({ color: 12597547, wireframe: wireframe_flag });
+		this.material = new THREE.MeshBasicMaterial({ color: 12597547, wireframe: wireframe_flag });
 		
-		this.addBulletBody(material, 0, 0, 0);
+		this.addBulletBody(this.material, 0, 0, 0);
 
 		this.radius = 4;
 		//this.addSphere(this.radius);	
@@ -15,6 +15,10 @@ class Bullet extends SpaceObject {
 		this.setSpeed(Math.PI/2, 150);
 		
 		this.setPosition(x,y,z);
+	}
+	
+	toggleWireframe() {
+		this.material.wireframe = !this.material.wireframe;
 	}
 	
 	addBulletBody(material, x, y, z){
