@@ -8,11 +8,11 @@ class Alien extends SpaceObject {
 		
 		super(scene);
 		this.basic_material = new THREE.MeshBasicMaterial({ color: 2600544, wireframe: true });
-		this.phong_material = new THREE.MeshPhongMaterial({ color: 2600544, wireframe: true,  shininess: 70, specular:0xffffff });
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 2600544, wireframe: true, shininess: 70, specular:0xffffff, shading:THREE.SmoothShading });
 		this.lambert_material = new THREE.MeshLambertMaterial({ color: 2600544, wireframe: true });
 		this.basic_claw_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-		this.phong_claw_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true,  shininess: 70, specular:0xfffff });
-		this.lambert_claw_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true });
+		this.phong_claw_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess: 70, specular:0xfffff, shading:THREE.SmoothShading });
+		this.lambert_claw_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true});
 		
 		this.material = this.basic_material;
 		this.claw_material = this.basic_claw_material;

@@ -24,27 +24,6 @@ function distanceVector( v1, v2 )
 }
 
 /* ------------------------------------------------------------------------------------------- */
-/* ------------------------------------OBJECTS FUNCTIONS-------------------------------------- */
-/* ------------------------------------------------------------------------------------------- */
-/*------------------------------------ESPAÇO DE JOGO----------------------------*/
-
-function createBoard(width, height) {
-	'use strict';
-	
-	board = new THREE.Object3D();
-	
-	material = new THREE.MeshPhongMaterial({color: 0x006600, wireframe: true })
-	geometry = new THREE.CubeGeometry(width,2,height);
-	mesh = new THREE.Mesh(geometry, material);
-	
-	board.add(mesh);
-	board.position.set(0, -20, 0);
-	
-	scene.add(board);
-	
-}
-
-/* ------------------------------------------------------------------------------------------- */
 /* ----------------------------------CALLBACK FUNCTIONS--------------------------------------- */
 /* ------------------------------------------------------------------------------------------- */
 
@@ -89,7 +68,6 @@ function onKeyDown(e) {
 	switch(e.keyCode) {
 		case 65: //A
 		case 97: //a
-			material.wireframe = !material.wireframe;
 			scene.traverse(function (node) {
 				if (node instanceof SpaceObject) {
 					node.toggleWireframe();
@@ -147,6 +125,10 @@ function onKeyDown(e) {
 				stars[i].toggleVisible();
 			}
 			break;
+		case 80: //P
+		case 112: //p
+			board.toggleVisible();
+			break;
 	}
 }
 
@@ -173,7 +155,8 @@ function createScene() {
 	scene = new THREE.Scene();
 	//scene.add(new THREE.AxisHelper(10));
 	
-	createBoard(boardWidth, boardHeight);
+	//Board
+	board = new Board(scene,0,-20,0,boardWidth,boardHeight,shadow_flag);
 	
 	//Creating Objects//
 	ship = new SpaceShip(scene, 0, 0, 100, shadow_flag);

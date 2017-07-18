@@ -6,7 +6,7 @@ class Bullet extends SpaceObject {
 		
 		super(scene);
 		this.basic_material = new THREE.MeshBasicMaterial({ color: 12597547, wireframe: wireframe_flag });
-		this.phong_material = new THREE.MeshPhongMaterial({ color: 12597547, wireframe: wireframe_flag, shininess: 70, specular:0xfffff });
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 12597547, wireframe: wireframe_flag, shininess: 70, specular:0xfffff, shading:THREE.SmoothShading });
 		this.lambert_material = new THREE.MeshLambertMaterial({ color: 12597547, wireframe: wireframe_flag });
 		
 		this.material = this.basic_material;
@@ -16,7 +16,7 @@ class Bullet extends SpaceObject {
 		this.radius = 4;
 		//this.addSphere(this.radius);	
 		
-		this.setSpeed(Math.PI/2, 50);
+		this.setSpeed(Math.PI/2, 150);
 		
 		this.setPosition(x,y,z);
 		

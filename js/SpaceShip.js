@@ -8,7 +8,7 @@ class SpaceShip extends SpaceObject {
 		
 		super(scene);
 		this.basic_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
-		this.phong_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess: 30, specular:0x111111});
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess: 30, specular:0x111111, shading:THREE.SmoothShading });
 		this.lambert_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true});
 		
 		this.material = this.basic_material;
