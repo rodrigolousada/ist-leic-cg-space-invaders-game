@@ -1,6 +1,8 @@
 class SpaceObject extends THREE.Object3D {
-	constructor() {
+	constructor(scene) {
 		super();
+		
+		this.radius = 0;
 		
 		this.speed = 0;
 		this.speed_x = 0;
@@ -17,6 +19,31 @@ class SpaceObject extends THREE.Object3D {
 		this.acceleration_direction_x0z = 0;
 		this.acceleration_direction_x = 1;
 		this.acceleration_direction_z = 0;
+		
+		scene.add(this);
+	}
+	
+	remove() {
+		scene.remove(this);
+	}
+	
+	//RADIUS//
+	getRadius() {
+		return this.radius;
+	}
+	
+	setRadius(new_radius) {
+		this.radius = new_radius;
+	}
+	
+	addSphere(radius){
+		'use strict';
+		var geometry = new THREE.SphereGeometry(radius);
+		var material = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true });
+		var mesh = new THREE.Mesh(geometry, material);
+		mesh.position.set(0, 0, 0);
+		
+		this.add(mesh);
 	}
 	
 	//POSITION//
@@ -52,7 +79,10 @@ class SpaceObject extends THREE.Object3D {
 		this.position.z = new_z;
 	}
 
-
+	stop() {
+		this.stopSpeed();
+		this.stopAcceleration();
+	}
 
 
 
@@ -72,6 +102,10 @@ class SpaceObject extends THREE.Object3D {
 	
 	stopSpeed() {
 		this.setSpeed(0,0);
+	}
+	
+	getSpeedDirectionX0Z() {
+		return this.speed_direction_x0z;
 	}
 	
 	getSpeedX() {
@@ -110,6 +144,9 @@ class SpaceObject extends THREE.Object3D {
 		this.speed_z = 0;
 	}
 	
+	invertSpeed() {
+		this.setSpeed(this.speed_direction_x0z+Math.PI, this.getSpeed());
+	}
 	
 	
 	
@@ -129,6 +166,10 @@ class SpaceObject extends THREE.Object3D {
 	
 	stopAcceleration() {
 		this.setAcceleration(0,0);
+	}
+	
+	getAccelerationDirectionX0Z() {
+		return this.acceleration_direction_x0z;
 	}
 	
 	getAccelerationX() {
@@ -171,7 +212,7 @@ class SpaceObject extends THREE.Object3D {
 	
 	
 	//UDPATE FUNCTIONS//
-	update(deltatime) { //EQUACAO DA VELOCIDADE
+	update(deltatime) { //EQUACAO DA VELOCIDADE		
 		this.position.x += (1/2)*this.speed_x*deltatime;
 		this.position.y += (1/2)*this.speed_y*deltatime;
 		this.position.z += (1/2)*this.speed_z*deltatime;
@@ -184,4 +225,5 @@ class SpaceObject extends THREE.Object3D {
 		this.position.y += (1/2)*this.speed_y*deltatime;
 		this.position.z += (1/2)*this.speed_z*deltatime;
 	}
+
 }

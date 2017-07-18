@@ -1,12 +1,26 @@
 /* global THREE*/
 var scene, renderer, material, geometry, mesh; //basic
-var camera, perspectivecamera, perspectivecamera2, orthogonalcamera; //cameras
-var board, alien1, alien2, alien3, alien4, alien5, alien6, alien7, alien8, ship, bullet; //objects
-var boardWidth = 500, boardHeight = 300, cameraRatio = (boardWidth/boardHeight); //Board
+var camera, perspectivecamera, perspectivecamera2, orthogonalcamera, width=500, height=300, cameraRatio = (width/height); //cameras
+var board, ship; //objects
+var boardWidth = width-20, boardHeight = height-20; //Board
 
 var bullets = [];
+var aliens = [];
 
 var clock; //clock
+
+/* ------------------------------------------------------------------------------------------- */
+/* ----------------------------------AUXILIAR FUNCTIONS--------------------------------------- */
+/* ------------------------------------------------------------------------------------------- */
+
+function distanceVector( v1, v2 )
+{
+    var dx = v1.x - v2.x;
+    var dy = v1.y - v2.y;
+    var dz = v1.z - v2.z;
+
+    return Math.sqrt( dx * dx + dy * dy + dz * dz );
+}
 
 /* ------------------------------------------------------------------------------------------- */
 /* ------------------------------------OBJECTS FUNCTIONS-------------------------------------- */
@@ -19,7 +33,7 @@ function createBoard(width, height) {
 	board = new THREE.Object3D();
 	
 	material = new THREE.MeshBasicMaterial({color: 0x006600, wireframe: true })
-	geometry = new THREE.CubeGeometry(width-10,2,height-10);
+	geometry = new THREE.CubeGeometry(width,2,height);
 	mesh = new THREE.Mesh(geometry, material);
 	
 	board.add(mesh);
@@ -30,7 +44,7 @@ function createBoard(width, height) {
 }
 
 /* ------------------------------------------------------------------------------------------- */
-/* ----------------------------------CALLBACK FUNCTIONS-------------------------------------- */
+/* ----------------------------------CALLBACK FUNCTIONS--------------------------------------- */
 /* ------------------------------------------------------------------------------------------- */
 
 function onResize() {
@@ -44,16 +58,16 @@ function onResize() {
 		var newAspectRatio = window.innerWidth/window.innerHeight;
 		console.log(newAspectRatio);
 		if (newAspectRatio > cameraRatio){
-			orthogonalcamera.left = (boardHeight * newAspectRatio)/(-2);
-			orthogonalcamera.right = (boardHeight * newAspectRatio)/2;
-			orthogonalcamera.bottom = (boardHeight)/(-2);
-			orthogonalcamera.top = (boardHeight)/2;
+			orthogonalcamera.left = (height * newAspectRatio)/(-2);
+			orthogonalcamera.right = (height * newAspectRatio)/2;
+			orthogonalcamera.bottom = (height)/(-2);
+			orthogonalcamera.top = (height)/2;
 		}
 		else{
-			orthogonalcamera.left = (boardWidth)/(-2);  //para a camera ficar com a proporcao do campo de jogo em termos de largura
-			orthogonalcamera.right = (boardWidth)/2;
-			orthogonalcamera.bottom = (boardWidth/ newAspectRatio)/(-2);
-			orthogonalcamera.top = (boardWidth/ newAspectRatio)/2;
+			orthogonalcamera.left = (width)/(-2);  //para a camera ficar com a proporcao do campo de jogo em termos de largura
+			orthogonalcamera.right = (width)/2;
+			orthogonalcamera.bottom = (width/ newAspectRatio)/(-2);
+			orthogonalcamera.top = (width/ newAspectRatio)/2;
 		}
 		orthogonalcamera.updateProjectionMatrix();
 		
@@ -109,8 +123,10 @@ function onKeyUp(e) {
 	
 	switch(e.keyCode) {
 		case 37: //left
+			ship.stopAccelerateLeft();
+			break;
 		case 39: //right
-			ship.stopAcceleration();
+			ship.stopAccelerateRight();
 			break;
 	}
 }
@@ -128,14 +144,14 @@ function createScene() {
 	
 	//Creating Objects//
 	ship = new SpaceShip(scene, 0, 0, 100);
-	alien1 = new Alien(scene, 150, 0, -50);
-	alien2 = new Alien(scene, 50, 0, -50);
-	alien3 = new Alien(scene, -50, 0, -50);
-	alien4 = new Alien(scene, -150, 0, -50);
-	alien5 = new Alien(scene, 150, 0, -100);
-	alien6 = new Alien(scene, 50, 0, -100);
-	alien7 = new Alien(scene, -50, 0, -100);
-	alien8 = new Alien(scene, -150, 0, -100);
+	aliens.push(new Alien(scene, 150, 0, -50));
+	aliens.push(new Alien(scene, 50, 0, -50));
+	aliens.push(new Alien(scene, -50, 0, -50));
+	aliens.push(new Alien(scene, -150, 0, -50));
+	aliens.push(new Alien(scene, 150, 0, -100));
+	aliens.push(new Alien(scene, 50, 0, -100));
+	aliens.push(new Alien(scene, -50, 0, -100));
+	aliens.push(new Alien(scene, -150, 0, -100));
 
 }
 
@@ -146,10 +162,10 @@ function createCameras() {
 	//FIRST CAMERA - ORTOGONAL//
 	var aspectRatio = window.innerWidth/window.innerHeight;
 	if(aspectRatio > cameraRatio) {
-		orthogonalcamera = new THREE.OrthographicCamera( boardHeight*aspectRatio / (-2), boardHeight*aspectRatio/ (2), boardHeight / 2, boardHeight / (-2), 1, 1000);
+		orthogonalcamera = new THREE.OrthographicCamera( height*aspectRatio / (-2), height*aspectRatio/ (2), height / 2, height / (-2), 1, 1000);
 	}
 	else {
-		orthogonalcamera = new THREE.OrthographicCamera( boardWidth / (-2), boardWidth / (2), (boardWidth/aspectRatio) / 2, (boardWidth/aspectRatio) / (-2), 1, 1000);
+		orthogonalcamera = new THREE.OrthographicCamera( width / (-2), width / (2), (width/aspectRatio) / 2, (width/aspectRatio) / (-2), 1, 1000);
 	}
 	orthogonalcamera.position.x = 0;
 	orthogonalcamera.position.y = 100;
@@ -186,21 +202,43 @@ function render() {
 
 function animate() {
 	'use strict';
-	var i;
+	var i,j;
 	var deltatime = clock.getDelta();
 	
+	//CHECKING COLISIONS//
+	//Aliens with Bullets
+	for(i=0; i < aliens.length; i++) {
+		for(j=0; j < bullets.length; j++) {
+			if(aliens[i].getRadius()+bullets[j].getRadius() > distanceVector(aliens[i].getPosition(),bullets[j].getPosition())) {
+				console.log("spliced");
+				aliens[i].remove();
+				bullets[j].remove();
+				aliens.splice(i,1);
+				bullets.splice(j,1);
+				break;
+			}
+		}
+	}
+	
+	//Aliens with Aliens
+	for(i=0; i < aliens.length; i++) {
+		for(j=i+1; j < aliens.length; j++) {
+			if(aliens[i].getRadius()+aliens[j].getRadius() > distanceVector(aliens[i].getPosition(),aliens[j].getPosition())) {
+				aliens[i].invertSpeed();
+				aliens[j].invertSpeed();
+			}
+		}
+	}
+	
+	
+	//UPDATING SHIP & ALIEN POSITIONS//
 	ship.update(deltatime);
 	for(i = 0; i < bullets.length; i++) {
-		bullets[i].update(deltatime);
+		if(bullets[i].update(deltatime)=="removed") bullets.splice(i,1);
 	}
-	alien1.update(deltatime);
-	alien2.update(deltatime);
-	alien3.update(deltatime);
-	alien4.update(deltatime);
-	alien5.update(deltatime);
-	alien6.update(deltatime);
-	alien7.update(deltatime);
-	alien8.update(deltatime);
+	for(i = 0; i < aliens.length; i++) {
+		aliens[i].update(deltatime);
+	}
 	
 	//UPDATING PERSPECTIVE CAMERA 2 POSITION//
 	perspectivecamera2.position.x = ship.getPositionX();

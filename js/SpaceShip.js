@@ -6,7 +6,7 @@ class SpaceShip extends SpaceObject {
 	constructor(scene,x,y,z) {
 		'use strict';
 		
-		super();
+		super(scene);
 		var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 		
 		
@@ -17,10 +17,11 @@ class SpaceShip extends SpaceObject {
 		this.addShipWing(material, 13, -3,7);
 		this.addShipWing(material, -13, -3,7);
 		this.addShipCannon(material, 0, 10 ,-8);
-				
-		this.setPosition(x,y,z);
 		
-		scene.add(this);
+		this.radius = 25;
+		//this.addSphere(this.radius);
+		
+		this.setPosition(x,y,z);
 	}
 	
 	//SHIP PARTS//
@@ -28,7 +29,6 @@ class SpaceShip extends SpaceObject {
 		'use strict';
 		var geometry = new THREE.CylinderGeometry(8, 8, 20);
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI / 2) ) );
-		//geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, 0 ) );
 		mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 		
@@ -40,7 +40,6 @@ class SpaceShip extends SpaceObject {
 
 		var geometry = new THREE.CylinderGeometry(0,8,20);
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2) ) );
-		//geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, 0) );
 		mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 
@@ -85,14 +84,36 @@ class SpaceShip extends SpaceObject {
 		this.setAcceleration(0, ACCELERATIONCONST);
 	}
 	
+	stopAccelerateRight() {
+		if(this.getAccelerationDirectionX0Z()==0) this.stopAcceleration();
+	}
+	
+	stopAccelerateLeft() {
+		if(this.getAccelerationDirectionX0Z()==Math.PI) this.stopAcceleration();
+	}
+	
 	//UPDATE FUNCTION//
 	update(deltatime) {
+		//Colision with boarders
+		if(this.getPositionX()-17 < -boardWidth/2) {
+			this.stopSpeed();
+			this.stopAccelerateLeft();
+			this.setPositionX(-boardWidth/2+17);
+		}
+		else if(this.getPositionX()+17 > boardWidth/2) {
+			this.stopSpeed();
+			this.stopAccelerateRight();
+			this.setPositionX(boardWidth/2-17);
+		}
+		
+		//Contrariar o movimento
 		if(this.acceleration_x*this.speed_x<0) {
-			this.setAcceleration(this.acceleration_direction_x0z, DEACCELERATIONCONST);
+			this.setAcceleration(this.getAccelerationDirectionX0Z(), DEACCELERATIONCONST);
 		}
 		else if(this.acceleration_x!=0) {
-			this.setAcceleration(this.acceleration_direction_x0z, ACCELERATIONCONST);
+			this.setAcceleration(this.getAccelerationDirectionX0Z(), ACCELERATIONCONST);
 		}
+		
 		super.update(deltatime);
 	}
 }
