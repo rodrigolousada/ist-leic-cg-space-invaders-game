@@ -3,10 +3,8 @@ var scene, renderer, material, geometry, mesh; //basic
 var camera, perspectivecamera, perspectivecamera2, orthogonalcamera; //cameras
 var board, alien1, alien2, alien3, alien4, alien5, alien6, alien7, alien8, ship, bullet; //objects
 var boardWidth = 500, boardHeight = 300, cameraRatio = (boardWidth/boardHeight); //Board
-const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST; //Acceleration
 
-var Bullets = {};
-var bullets_counter = 0;
+var bullets = [];
 
 var clock; //clock
 
@@ -32,40 +30,19 @@ function createBoard(width, height) {
 }
 
 /* ------------------------------------------------------------------------------------------- */
-/* ----------------------------------ANIMATION FUNCTIONS-------------------------------------- */
+/* ----------------------------------CALLBACK FUNCTIONS-------------------------------------- */
 /* ------------------------------------------------------------------------------------------- */
-
-function animate() {
-	'use strict';
-	
-	var deltatime = clock.getDelta();
-	var b = bullets_counter-1;
-	
-	ship.update(perspectivecamera2, deltatime);
-	if(Bullets["bullet" + b]){ Bullets["bullet" + b].fire(deltatime);}
-	alien1.update(deltatime);
-	alien2.update(deltatime);
-	alien3.update(deltatime);
-	alien4.update(deltatime);
-	alien5.update(deltatime);
-	alien6.update(deltatime);
-	alien7.update(deltatime);
-	alien8.update(deltatime);
-	
-	render();
-
-	requestAnimationFrame(animate);
-}
 
 function onResize() {
 	'use strict';
 	
 	if(window.innerWidth>0 && window.innerHeight>0){
 		
+		renderer.setSize(window.innerWidth,window.innerHeight);
+		
 		//ORTOGONAL CAMERA RESIZE
 		var newAspectRatio = window.innerWidth/window.innerHeight;
 		console.log(newAspectRatio);
-		renderer.setSize(window.innerWidth,window.innerHeight);
 		if (newAspectRatio > cameraRatio){
 			orthogonalcamera.left = (boardHeight * newAspectRatio)/(-2);
 			orthogonalcamera.right = (boardHeight * newAspectRatio)/2;
@@ -82,8 +59,12 @@ function onResize() {
 		
 		
 		//PERSPECTIVE STATIC CAMERA RESIZE
+		perspectivecamera.aspect = window.innerWidth /window.innerHeight;
+		perspectivecamera.updateProjectionMatrix();
 		
 		//PERSPECTIVE CAMERA RESIZE
+		perspectivecamera2.aspect = window.innerWidth /window.innerHeight;
+		perspectivecamera2.updateProjectionMatrix();
 	}
 }
 
@@ -109,20 +90,14 @@ function onKeyDown(e) {
 			camera=perspectivecamera2;
 			break;
 		case 37: //left
-			ship.setAcceleration(-ACCELERATIONCONST);
+			ship.accelerateLeft()
 			break;
 		case 39: //right
-			ship.setAcceleration(ACCELERATIONCONST);
+			ship.accelerateRight()
 			break;
 		case 66: //B
 		case 98: //b
-			var deltatime = clock.getDelta();
-			//bullet = new Bullet(scene, ship.getPositionX(), ship.getPositionY(), 75);
-			//bullet.setAcceleration(ACCELERATIONCONST*5);
-			console.log("bullet");
-			Bullets["bullet" + bullets_counter] = new Bullet(scene, ship.getPositionX(), ship.getPositionY(), 75);
-			Bullets["bullet" + bullets_counter].setAcceleration(ACCELERATIONCONST*5);
-			bullets_counter++;
+			bullets.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25));
 			break;
 			
 	}
@@ -140,17 +115,9 @@ function onKeyUp(e) {
 	}
 }
 
-
 /* ------------------------------------------------------------------------------------------- */
-/* -----------------------------------MAIN FUNCTIONS ----------------------------------------- */
+/* ----------------------------------SCENE & CAMERAS CREATION--------------------------------- */
 /* ------------------------------------------------------------------------------------------- */
-
-function render() {
-	'use strict';
-	
-	renderer.render(scene, camera);
-}
-
 function createScene() {
 	'use strict';
 	
@@ -200,11 +167,49 @@ function createCameras() {
 	
 	//THIRD CAMERA - PERPECTIVE & MOVEL//
 	perspectivecamera2 = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-	perspectivecamera2.position.x = 0;
-	perspectivecamera2.position.y = 15;
-	perspectivecamera2.position.z = 150;
+	perspectivecamera2.position.x = ship.getPositionX();
+	perspectivecamera2.position.y = ship.getPositionY() + 15;
+	perspectivecamera2.position.z = ship.getPositionZ() + 50;
 	perspectivecamera2.lookAt((0,0,1));
 	
+}
+
+/* ------------------------------------------------------------------------------------------- */
+/* -----------------------------------MAIN FUNCTIONS ----------------------------------------- */
+/* ------------------------------------------------------------------------------------------- */
+
+function render() {
+	'use strict';
+	
+	renderer.render(scene, camera);
+}
+
+function animate() {
+	'use strict';
+	var i;
+	var deltatime = clock.getDelta();
+	
+	ship.update(deltatime);
+	for(i = 0; i < bullets.length; i++) {
+		bullets[i].update(deltatime);
+	}
+	alien1.update(deltatime);
+	alien2.update(deltatime);
+	alien3.update(deltatime);
+	alien4.update(deltatime);
+	alien5.update(deltatime);
+	alien6.update(deltatime);
+	alien7.update(deltatime);
+	alien8.update(deltatime);
+	
+	//UPDATING PERSPECTIVE CAMERA 2 POSITION//
+	perspectivecamera2.position.x = ship.getPositionX();
+	perspectivecamera2.position.y = ship.getPositionY() + 15;
+	perspectivecamera2.position.z = ship.getPositionZ() + 50;
+	
+	render();
+
+	requestAnimationFrame(animate);
 }
 
 function init() {

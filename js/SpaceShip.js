@@ -1,7 +1,9 @@
+const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST; //Acceleration
+
 /*------------------------------------NAVE----------------------------*/
 class SpaceShip extends SpaceObject {
 	
-	constructor(scene, x, y, z) {
+	constructor(scene,x,y,z) {
 		'use strict';
 		
 		super();
@@ -15,10 +17,8 @@ class SpaceShip extends SpaceObject {
 		this.addShipWing(material, 13, -3,7);
 		this.addShipWing(material, -13, -3,7);
 		this.addShipCannon(material, 0, 10 ,-8);
-		this.speed=0;
-		this.acceleration=0;
-		
-		this.position.set(x,y,z);
+				
+		this.setPosition(x,y,z);
 		
 		scene.add(this);
 	}
@@ -76,72 +76,23 @@ class SpaceShip extends SpaceObject {
 		this.add(mesh);
 	}
 	
-	//POSITION
-	getPosition() {
-		return this.position;
+	//ACCELERATION FUNCTIONS//
+	accelerateLeft() {
+		this.setAcceleration(Math.PI, ACCELERATIONCONST);
 	}
 	
-	setPosition(x,y,z) {
-		this.position.set(x,y,z);
-	}
-	
-	getPositionX() {
-		return this.position.x;
-	}
-	
-	getPositionY() {
-		return this.position.y;
-	}
-	
-	getPositionZ() {
-		return this.position.z;
-	}
-	
-	setPositionX(new_x) {
-		return this.position.x = new_x;
-	}
-	
-	setPositionY(new_y) {
-		return this.position.y = new_y;
-	}
-	
-	setPositionZ(new_z) {
-		return this.position.z = new_z;
-	}
-	
- 
-	//SPEED//
-	getSpeed() {
-		return this.speed;
-	}
-	
-	setSpeed(new_speed) {
-		return this.speed = new_speed;
-	}
-	
-	//ACCELERATION//
-	getAcceleration() {
-		return this.acceleration;
-	}
-	
-	setAcceleration(new_acceleration) {
-		return this.acceleration = new_acceleration;
-	}
-	
-	stopAcceleration() {
-		this.acceleration = 0;
+	accelerateRight() {
+		this.setAcceleration(0, ACCELERATIONCONST);
 	}
 	
 	//UPDATE FUNCTION//
-	update(perspectivecamera2, deltatime) {
-		if(this.acceleration*this.speed<0) {
-			this.acceleration = (Math.abs(this.acceleration)/this.acceleration)*DEACCELERATIONCONST;
+	update(deltatime) {
+		if(this.acceleration_x*this.speed_x<0) {
+			this.setAcceleration(this.acceleration_direction_x0z, DEACCELERATIONCONST);
 		}
-		else if(this.acceleration!=0 && this.speed==0) {
-			this.acceleration = (Math.abs(this.acceleration)/this.acceleration)*ACCELERATIONCONST;
+		else if(this.acceleration_x!=0) {
+			this.setAcceleration(this.acceleration_direction_x0z, ACCELERATIONCONST);
 		}
-		this.speed+=(1/2)*this.acceleration*deltatime;
-		this.position.x += this.speed*deltatime;
-		perspectivecamera2.position.x += this.speed*deltatime;
+		super.update(deltatime);
 	}
 }

@@ -15,14 +15,10 @@ class Alien extends SpaceObject {
 		this.addAlienArm(material, -13, 0, 5);
 		this.addAlienClaw(material2, 13, 0, 15);
 		this.addAlienClaw(material2, -13, 0, 15);
-		this.acceleration=10;
-		this.speed=0;
-		this.dir = Math.random()*Math.PI*2;
-		this.dx = Math.cos(this.dir);
-		this.dz = Math.sin(this.dir);
-				
-		this.position.set(x,y,z);
 		
+		this.setSpeed(Math.random()*Math.PI*2, 20);
+		
+		this.setPosition(x,y,z);
 		
 		scene.add(this);
 	}
@@ -60,60 +56,5 @@ class Alien extends SpaceObject {
 		var mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 		this.add(mesh);
-	}
-	
-	//POSITION//
-	
-	getPositionX(){
-		return this.position.x;
-	}
-	
-	setPositionX(new_x){
-		this.position.x = new_x;
-	}
-	
-	getPositionY(){
-		return this.position.y;
-	}
-	
-	setPositionY(new_y){
-		this.position.y = new_y;
-	}
-	
-	getPositionZ(){
-		return this.position.z;
-	}
-	
-	setPositionZ(new_z){
-		this.position.z = new_z;
-	}
-	
-	//SPEED//
-	getSpeed() {
-		return this.speed;
-	}
-	
-	setSpeed(new_speed) {
-		return this.speed = new_speed;
-	}
-	
-	//ACCELERATION//
-	getAcceleration() {
-		return this.acceleration;
-	}
-	
-	setAcceleration(new_acceleration) {
-		return this.acceleration = new_acceleration;
-	}
-	
-	stopAcceleration() {
-		this.acceleration = 0;
-	}
-	
-	update(deltatime){
-		
-		this.speed += this.acceleration*deltatime;
-		this.position.x += this.speed*deltatime*this.dx;
-		this.position.z += this.speed*deltatime*this.dz;
 	}
 }
