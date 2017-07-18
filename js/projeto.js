@@ -92,7 +92,7 @@ function onKeyDown(e) {
 			break;
 		case 66: //B
 		case 98: //b
-			objects.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25, wireframe_flag, shadow_flag));
+			objects.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 30, wireframe_flag, shadow_flag));
 			break;
 		case 78: //N
 		case 110: //n

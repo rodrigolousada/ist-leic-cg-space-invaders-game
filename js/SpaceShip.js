@@ -14,7 +14,7 @@ class SpaceShip extends SpaceObject {
 		this.material = this.basic_material;
 		
 		this.addShipBody(0, 0, 0);
-		this.addFrontShip(0, 0, -20);
+		this.addFrontShip(0, 0, 0);
 		this.addWingSupport(-8, 0, 0);
 		this.addWingSupport(8, 0, 0);
 		this.addShipWing(13, -3,7);
@@ -32,8 +32,37 @@ class SpaceShip extends SpaceObject {
 	//SHIP PARTS//
 	addShipBody(x, y, z) {
 		'use strict';
-		var geometry = new THREE.CylinderGeometry(8, 8, 20);
-		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI / 2) ) );
+		var geometry = new THREE.Geometry();
+		geometry.vertices.push(
+			new THREE.Vector3( 0,  -8, 10 ),
+			new THREE.Vector3( 10, 8, 10 ),
+			new THREE.Vector3(  -10, 8, 10 ),
+			
+			new THREE.Vector3( 0,  -8, -10 ),
+			new THREE.Vector3(  10, 8, -10 ),
+			new THREE.Vector3( -10, 8, -10 )
+
+		);
+		geometry.faces.push( 
+			//TRI T
+			new THREE.Face3( 0, 1, 2 ),
+			//TRI F
+			new THREE.Face3( 5, 4, 3),
+			
+			//E
+			new THREE.Face3(0, 2, 5),
+			new THREE.Face3(0, 5, 3),
+			
+			//C
+			new THREE.Face3(2, 1, 5),
+			new THREE.Face3(1, 4, 5),
+			
+			//D
+			new THREE.Face3(0, 3, 1),
+			new THREE.Face3(1, 3, 4)
+		);		
+		geometry.computeFaceNormals();
+		
 		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 		
@@ -42,9 +71,25 @@ class SpaceShip extends SpaceObject {
 	
 	addFrontShip(x, y, z){
 		'use strict';
-
-		var geometry = new THREE.CylinderGeometry(0,8,20);
-		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2) ) );
+		var geometry = new THREE.Geometry();
+		geometry.vertices.push(
+		new THREE.Vector3( 0,  -8, -10 ),
+		new THREE.Vector3(  10, 8, -10 ),
+		new THREE.Vector3( -10, 8, -10 ),
+		
+		new THREE.Vector3( 0, 0, -35 )
+		);
+		
+		geometry.faces.push( 
+			//TRI F
+			new THREE.Face3( 2, 1, 0),
+			
+			new THREE.Face3( 2, 1, 3),
+			new THREE.Face3( 2, 0, 3),
+			new THREE.Face3( 0, 1, 3)
+		);
+		geometry.computeFaceNormals();
+		
 		mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 
