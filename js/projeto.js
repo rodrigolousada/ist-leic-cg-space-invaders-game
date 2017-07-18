@@ -99,7 +99,8 @@ function addAlienSupport(obj, x, y, z){
 function addAlienClaw(obj, x, y, z){
 	'use strict';
 
-	geometry = new THREE.CylinderGeometry(0,2,10,70);
+	geometry = new THREE.CylinderGeometry(0,2,10,40);
+	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI/2) );
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y, z);
@@ -109,7 +110,8 @@ function addAlienClaw(obj, x, y, z){
 
 function addAlienArm(obj, x, y, z){
 	'use strict';
-	geometry = new THREE.CylinderGeometry(3,3,10, 70);
+	geometry = new THREE.CylinderGeometry(3,3,10, 60);
+	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2)) );
 	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y, z);
@@ -136,8 +138,8 @@ function createMonster(x, y, z) {
 	addAlienSupport(monster, 8, 8, 8);
 	addAlienSupport(monster, -8, 8, 8);
 	addAlienBody(monster, 0, 0, 0);
-	addAlienClaw(monster, 13, 20, 8);
-	addAlienClaw(monster, -13, 20, 8);
+	addAlienClaw(monster, 13, 10, 18);
+	addAlienClaw(monster, -13, 10, 18);
 	
 	monster.position.set(x,y,z);
 	
