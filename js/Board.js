@@ -16,5 +16,7 @@ class Board extends SpaceObject {
 		this.setPosition(x,y,z);
 		
 		this.changeShadow(shadow_flag);
+		
+		this.visible = false;
 	}
 }

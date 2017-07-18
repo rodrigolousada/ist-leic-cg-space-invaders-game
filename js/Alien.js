@@ -28,7 +28,7 @@ class Alien extends SpaceObject {
 		this.radius = 17;
 		//this.addSphere(this.radius);
 		
-		this.setSpeed(Math.random()*Math.PI*2, 20);
+		this.setSpeed(Math.random()*Math.PI*2, 30);
 
 		this.setPosition(x,y,z);
 		

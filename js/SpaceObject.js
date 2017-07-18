@@ -35,11 +35,12 @@ class SpaceObject extends THREE.Object3D {
 		this.max_lives = 1;
 		this.lives = this.max_lives;
 		
-		scene.add(this);
+		this.scene = scene;
+		this.scene.add(this);
 	}
 	
 	remove() {
-		scene.remove(this);
+		this.scene.remove(this);
 	}
 	
 	//LIVES

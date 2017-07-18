@@ -18,14 +18,14 @@ var clock; //clock
 
 function createBackground(scene) {
 	var texture = new THREE.TextureLoader().load("background.jpg");
-	var geometry = new THREE.SphereGeometry(500);
+	var geometry = new THREE.SphereGeometry(1000);
 	var mesh = new THREE.MeshBasicMaterial();
 	mesh.map = texture;
 	var mesh = new THREE.Mesh(geometry,mesh);
 	mesh.material.side = THREE.BackSide;
 	mesh.material.map.wrapS = THREE.RepeatWrapping;
 	mesh.material.map.wrapT = THREE.RepeatWrapping;
-	mesh.material.map.repeat.set(10,12);
+	mesh.material.map.repeat.set(10,12); //(8,16);
 	scene.add(mesh);
 	mesh.position.set(0,0,0);
 }
@@ -34,6 +34,7 @@ function createBackground(scene) {
 /* ----------------------------------------MESSAGES------------------------------------------ */
 /* ------------------------------------------------------------------------------------------- */
 function createSignal(texture, scene) {
+	texture.minFilter = THREE.LinearFilter;
 	var geometry = new THREE.CubeGeometry(width,0,height);
 	var mesh = new THREE.MeshBasicMaterial();
 	mesh.map = texture;
@@ -46,7 +47,7 @@ function createSignal(texture, scene) {
 }
 
 function createGameOver(scene) {
-	var texture = new THREE.TextureLoader().load("gameover.png");
+	var texture = new THREE.TextureLoader().load("gameover.jpg");
 	gameover = createSignal(texture, scene);
 }
 
@@ -97,33 +98,21 @@ function onResize() {
 		
 		renderer.setSize(window.innerWidth,window.innerHeight);
 		
-		//ORTOGONAL CAMERAS RESIZE
+		//ORTOGONAL CAMERA RESIZE
 		var newAspectRatio = window.innerWidth/window.innerHeight;
 		if (newAspectRatio > cameraRatio){
 			orthogonalcamera.left = (height * newAspectRatio)/(-2);
 			orthogonalcamera.right = (height * newAspectRatio)/2;
 			orthogonalcamera.bottom = (height)/(-2);
-			orthogonalcamera.top = (height)/2;
-			
-			cameraLives.left = (height * newAspectRatio)/(-6);
-			cameraLives.right = (height * newAspectRatio)/6;
-			cameraLives.bottom = (height)/(-6);
-			cameraLives.top = (height)/6;
-			
+			orthogonalcamera.top = (height)/2;			
 		}
 		else{
 			orthogonalcamera.left = (width)/(-2);  //para a camera ficar com a proporcao do campo de jogo em termos de largura
 			orthogonalcamera.right = (width)/2;
 			orthogonalcamera.bottom = (width/ newAspectRatio)/(-2);
 			orthogonalcamera.top = (width/ newAspectRatio)/2;
-			
-			cameraLives.left = (width)/(-6);  //para a camera ficar com a proporcao do campo de jogo em termos de largura
-			cameraLives.right = (width)/6;
-			cameraLives.bottom = (width/ newAspectRatio)/(-6);
-			cameraLives.top = (width/ newAspectRatio)/6;
 		}
-		orthogonalcamera.updateProjectionMatrix();		
-		cameraLives.updateProjectionMatrix();		
+		orthogonalcamera.updateProjectionMatrix();			
 		
 		//PERSPECTIVE STATIC CAMERA RESIZE
 		perspectivecamera.aspect = window.innerWidth /window.innerHeight;
@@ -131,7 +120,14 @@ function onResize() {
 		
 		//PERSPECTIVE CAMERA RESIZE
 		ship.getCamera().aspect = window.innerWidth /window.innerHeight;
-		ship.getCamera().updateProjectionMatrix();		
+		ship.getCamera().updateProjectionMatrix();
+		
+		//CAMERA LIVES RESIZE (1/3 OF ORTOGONAL CAMERA)
+		cameraLives.left = orthogonalcamera.left/3;
+		cameraLives.right = orthogonalcamera.right/3;
+		cameraLives.bottom = orthogonalcamera.bottom/3;
+		cameraLives.top = orthogonalcamera.top/3;
+		cameraLives.updateProjectionMatrix();
 	}
 }
 
@@ -212,6 +208,7 @@ function onKeyDown(e) {
 				clock.stop();
 				last_camera = camera;
 				camera = orthogonalcamera;
+				scene2.visible = false;
 				toggleMessage("pause");
 				break;
 		}
@@ -220,12 +217,12 @@ function onKeyDown(e) {
 		switch(e.keyCode) {
 			case 82: //R
 			case 114: //r
-				reset();
+				resetGame();
+				scene2.visible = true;
 				gameover.visible = false;
 				youwon.visible = false;
 				lost = false;
 				won = false;
-				clock.start();
 				break;
 		}
 	}
@@ -235,6 +232,7 @@ function onKeyDown(e) {
 			case 115: //s
 				clock.start();
 				camera = last_camera;
+				scene2.visible = true;
 				toggleMessage("pause");
 				break;
 		}
@@ -260,6 +258,7 @@ function game_over() {
 	clock.stop();
 	last_camera = camera;
 	camera = orthogonalcamera;
+	scene2.visible = false;
 	gameover.visible = true;
 }
 
@@ -268,6 +267,7 @@ function wonGame() {
 	clock.stop();
 	last_camera = camera;
 	camera = orthogonalcamera;
+	scene2.visible = false;
 	youwon.visible = true;
 }
 
@@ -299,6 +299,7 @@ function createScene() {
 	'use strict';
 	
 	scene = new THREE.Scene();
+	scene2 = new THREE.Scene();
 	//scene.add(new THREE.AxisHelper(10));
 	
 	
@@ -312,9 +313,9 @@ function createScene() {
 	board = new Board(scene,0,-20,0,boardWidth,boardHeight,shadow_flag, wireframe_flag);
 	
 	//Lives
-	lives.push(new SpaceShip(scene, -50, 0, 1000, shadow_flag, wireframe_flag, ship_n_lives));
-	lives.push(new SpaceShip(scene, 0, 0, 1000, shadow_flag, wireframe_flag, ship_n_lives));
-	lives.push(new SpaceShip(scene, 50, 0, 1000, shadow_flag, wireframe_flag, ship_n_lives));
+	lives.push(new SpaceShip(scene2, -50, 0, 0, "basic", wireframe_flag, ship_n_lives));
+	lives.push(new SpaceShip(scene2, 0, 0, 0, "basic", wireframe_flag, ship_n_lives));
+	lives.push(new SpaceShip(scene2, 50, 0, 0, "basic", wireframe_flag, ship_n_lives));
 	
 	decorateScene();
 }
@@ -326,12 +327,10 @@ function createCameras() {
 	//FIRST CAMERA - ORTOGONAL//
 	var aspectRatio = window.innerWidth/window.innerHeight;
 	if(aspectRatio > cameraRatio) {
-		orthogonalcamera = new THREE.OrthographicCamera( height*aspectRatio / (-2), height*aspectRatio/ (2), height / 2, height / (-2), 1, 1000);
-		cameraLives = new THREE.OrthographicCamera( height*aspectRatio / (-6), height*aspectRatio/ (6), height / 6, height / (-6), 1, 1000);
+		orthogonalcamera = new THREE.OrthographicCamera( height*aspectRatio / (-2), height*aspectRatio/ (2), height / 2, height / (-2), 1, 1500);
 	}
 	else {
-		orthogonalcamera = new THREE.OrthographicCamera( width / (-2), width / (2), (width/aspectRatio) / 2, (width/aspectRatio) / (-2), 1, 1000);
-		cameraLives = new THREE.OrthographicCamera( width / (-6), width / (6), (width/aspectRatio) / 6, (width/aspectRatio) / (-6), 1, 1000);
+		orthogonalcamera = new THREE.OrthographicCamera( width / (-2), width / (2), (width/aspectRatio) / 2, (width/aspectRatio) / (-2), 1, 1500);
 	}
 	orthogonalcamera.position.x = 0;
 	orthogonalcamera.position.y = 100;
@@ -341,19 +340,21 @@ function createCameras() {
 	camera=orthogonalcamera; //defining camera as orthogonal
 	
 	//SECOND CAMERA - PERSPECTIVE & STATIC//
-	perspectivecamera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 1000);
+	perspectivecamera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 1500);
 	perspectivecamera.position.x = 0;
 	perspectivecamera.position.y = 220;
 	perspectivecamera.position.z = 150;
 	perspectivecamera.lookAt(scene.position);
 	
 	//THIRD CAMERA - PERPECTIVE & MOVEL//
-	ship.addCamera(new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000));
+	ship.addCamera(new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1500));
 	
-	//LIVES CAMERA
+
+	//CAMERA LIVES RESIZE (1/3 OF ORTOGONAL CAMERA)
+	cameraLives = new THREE.OrthographicCamera( orthogonalcamera.left/3, orthogonalcamera.right/3, orthogonalcamera.top/3, orthogonalcamera.bottom/3);
 	cameraLives.position.x = 0;
 	cameraLives.position.y = 100;
-	cameraLives.position.z = 1000;
+	cameraLives.position.z = 0;
 	cameraLives.lookAt(lives[1].position);	
 }
 
@@ -373,7 +374,7 @@ function createLights() {
 	stars.push(new PointStar(scene, stars_light_color, stars_intensity, boardWidth/4, 20, boardHeight/4));
 
 	//SHIP SPOTLIGHT
-	ship.addLight(new THREE.SpotLight(0xeeeeee, 3, boardHeight, Math.PI/3, 0.3, 2));
+	ship.addLight(new THREE.SpotLight(0xeeeeee, 3, boardHeight/*/2*/, Math.PI/3, 0.3, 2));
 }
 
 /* ------------------------------------------------------------------------------------------- */
@@ -382,14 +383,15 @@ function createLights() {
 
 function shipLostLife() {
 	for(i=lives.length-1; i>=0; i--) {
-		if(lives[i].visible == true) {
+		if(lives[i].visible) {
 			lives[i].visible = false;
 			break;
 		}
 	}
+	if(ship.crash() == "dead") game_over();
 }
 
-function reset() {
+function resetGame() {
 	//Clean Objects
 	for(i=0; i < objects.length; i++) {
 		objects[i].remove();
@@ -404,11 +406,14 @@ function reset() {
 	
 	//Create Objects Again
 	decorateScene();
-	ship.addCamera(new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000));
+	ship.addCamera(new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1500));
 	ship.addLight(new THREE.SpotLight(0xeeeeee, 3, boardHeight, Math.PI/3, 0.3, 2));
 	
 	//Chose Camera
 	camera = orthogonalcamera;
+	
+	//Restart Clock
+	clock.start();
 }
 
 /* ------------------------------------------------------------------------------------------- */
@@ -420,8 +425,8 @@ function render() {
 	renderer.clear();
 	renderer.setViewport(0,0,window.innerWidth,window.innerHeight);
 	renderer.render(scene, camera);
-	renderer.setViewport(0,0,window.innerWidth/8,window.innerHeight/8);
-	renderer.render(scene, cameraLives);
+	renderer.setViewport(0,0,window.innerWidth/6,window.innerHeight/6);
+	renderer.render(scene2, cameraLives);
 }
 
 function animate() {
@@ -433,7 +438,14 @@ function animate() {
 	if(clock.running) deltatime = clock.getDelta();
 	
 	//CHECKING COLLISIONS//
+	collisions:
 	for(i=0; i < objects.length; i++) {
+		if(objects[i].getRadius()+ship.getRadius() > distanceVector(objects[i].getPosition(),ship.getPosition())) {
+			objects[i].remove();
+			objects.splice(i,1);
+			shipLostLife();
+			break collisions;
+		}
 		for(j=i+1; j < objects.length; j++) {
 			if(objects[i].getRadius()+objects[j].getRadius() > distanceVector(objects[i].getPosition(),objects[j].getPosition())) {
 				if(objects[i] instanceof Alien && objects[j] instanceof Alien) { //Aliens with Aliens
@@ -446,16 +458,9 @@ function animate() {
 					objects.splice(i,1);
 					j--;
 					objects.splice(j,1);
-					break;
+					break collisions;
 				}
 			}
-		}
-		if(objects[i].getRadius()+ship.getRadius() > distanceVector(objects[i].getPosition(),ship.getPosition())) {
-			objects[i].remove();
-			objects.splice(i,1);
-			if(ship.crash() == "dead") game_over();
-			shipLostLife();
-			break;
 		}
 	}
 	
