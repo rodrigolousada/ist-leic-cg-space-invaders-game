@@ -50,12 +50,6 @@ class SpaceObject extends THREE.Object3D {
 		this.add(mesh);
 	}
 	
-	//COLLISION
-	colided() {
-		this.invertSpeed();
-		this.getBackToLastPosition();
-	}
-	
 	//POSITION//
 	getPosition() {
 		return this.position;

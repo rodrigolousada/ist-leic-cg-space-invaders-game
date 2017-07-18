@@ -7,16 +7,16 @@ class Alien extends SpaceObject {
 		'use strict';
 		
 		super(scene);
-		this.material = new THREE.MeshBasicMaterial({ color: 2600544, wireframe: true });
-		this.claw_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+		var material = new THREE.MeshBasicMaterial({ color: 2600544, wireframe: true });
+		var material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 		
-		this.addAlienBody(0, 0, -7);
-		this.addAlienSupport(8, 0, -2);
-		this.addAlienSupport(-8, 0, -2);
-		this.addAlienArm(13, 0, -2);
-		this.addAlienArm(-13, 0, -2);
-		this.addAlienClaw(13, 0, 8);
-		this.addAlienClaw(-13, 0, 8);
+		this.addAlienBody(material, 0, 0, -7);
+		this.addAlienSupport(material, 8, 0, -2);
+		this.addAlienSupport(material, -8, 0, -2);
+		this.addAlienArm(material, 13, 0, -2);
+		this.addAlienArm(material, -13, 0, -2);
+		this.addAlienClaw(material2, 13, 0, 8);
+		this.addAlienClaw(material2, -13, 0, 8);
 		
 		this.radius = 17;
 		//this.addSphere(this.radius);
@@ -26,41 +26,36 @@ class Alien extends SpaceObject {
 		this.setPosition(x,y,z);
 	}
 	
-	toggleWireframe() {
-		this.material.wireframe = !this.material.wireframe;
-		this.claw_material.wireframe = !this.claw_material.wireframe;
-	}
-	
-	addAlienBody(x, y, z){
+	addAlienBody(material, x, y, z){
 		'use strict';
 		var geometry = new THREE.SphereGeometry(8/*, 30, 60*/);
-		var mesh = new THREE.Mesh(geometry, this.material);
+		var mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 		this.add(mesh);
 	}
 		
-	addAlienSupport(x, y, z){
+	addAlienSupport(material, x, y, z){
 		var geometry = new THREE.CubeGeometry(4,2,2);
-		var mesh = new THREE.Mesh(geometry, this.material);
+		var mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x,y,z);
 		this.add(mesh);
 	}
 
-	addAlienArm(x, y, z){
+	addAlienArm(material, x, y, z){
 		'use strict';
 		var geometry = new THREE.CylinderGeometry(3,3,10 /*,60*/);
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2)) );
-		var mesh = new THREE.Mesh(geometry, this.material);
+		var mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 		this.add(mesh);
 	}
 	
-	addAlienClaw(x, y, z){
+	addAlienClaw(material, x, y, z){
 		'use strict';
 
 		var geometry = new THREE.CylinderGeometry(0,2,10/*,40*/);
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI/2) );
-		var mesh = new THREE.Mesh(geometry, this.claw_material);
+		var mesh = new THREE.Mesh(geometry, material);
 		mesh.position.set(x, y, z);
 		this.add(mesh);
 	}
@@ -68,8 +63,8 @@ class Alien extends SpaceObject {
 	update(deltatime) {
 		//Collision with boarders
 		if(this.getPositionX()-this.getRadius() <= -boardWidth/2 || this.getPositionX()+this.getRadius() >= boardWidth/2) {
-			this.setSpeed(Math.PI - this.getSpeedDirectionX0Z(), this.getSpeed());
 			this.getBackToLastPosition();
+			this.setSpeed(Math.PI - this.getSpeedDirectionX0Z(), this.getSpeed());
 		}
 		else if(this.getPositionZ()+this.getRadius() >= BOTTOMLIMIT || this.getPositionZ()-this.getRadius() <= -boardHeight/2) {
 			this.setSpeed(-this.getSpeedDirectionX0Z(), this.getSpeed());
@@ -77,5 +72,7 @@ class Alien extends SpaceObject {
 		}		
 		
 		super.update(deltatime);
+		
+		return "Alien";
 	}
 }
