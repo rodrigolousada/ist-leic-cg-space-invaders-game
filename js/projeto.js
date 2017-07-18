@@ -38,6 +38,14 @@ function animate() {
 	var deltatime = clock.getDelta();
 	
 	ship.update(perspectivecamera2, deltatime);
+	alien1.update(deltatime);
+	alien2.update(deltatime);
+	alien3.update(deltatime);
+	alien4.update(deltatime);
+	alien5.update(deltatime);
+	alien6.update(deltatime);
+	alien7.update(deltatime);
+	alien8.update(deltatime);
 	
 	render();
 
@@ -147,7 +155,6 @@ function createScene() {
 	alien7 = new Alien(scene, -50, 0, -100);
 	alien8 = new Alien(scene, -150, 0, -100);
 
-	
 }
 
 function createCameras() {

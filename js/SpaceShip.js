@@ -76,13 +76,12 @@ class SpaceShip extends SpaceObject {
 		this.add(mesh);
 	}
 	
-	
 	//POSITION
 	getPosition() {
 		return this.position;
 	}
 	
-	setPostion(x,y,z) {
+	setPosition(x,y,z) {
 		this.position.set(x,y,z);
 	}
 	
