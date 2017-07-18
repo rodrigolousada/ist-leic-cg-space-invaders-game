@@ -1,9 +1,12 @@
 /* global THREE*/
 var scene, renderer, material, geometry, mesh; //basic
 var camera, perspectivecamera, perspectivecamera2, orthogonalcamera; //cameras
-var board, alien1, alien2, alien3, alien4, alien5, alien6, alien7, alien8, ship; //objects
+var board, alien1, alien2, alien3, alien4, alien5, alien6, alien7, alien8, ship, bullet; //objects
 var boardWidth = 500, boardHeight = 300, cameraRatio = (boardWidth/boardHeight); //Board
 const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST; //Acceleration
+
+var Bullets = {};
+var bullets_counter = 0;
 
 var clock; //clock
 
@@ -36,8 +39,10 @@ function animate() {
 	'use strict';
 	
 	var deltatime = clock.getDelta();
+	var b = bullets_counter-1;
 	
 	ship.update(perspectivecamera2, deltatime);
+	if(Bullets["bullet" + b]){ Bullets["bullet" + b].fire(deltatime);}
 	alien1.update(deltatime);
 	alien2.update(deltatime);
 	alien3.update(deltatime);
@@ -109,6 +114,17 @@ function onKeyDown(e) {
 		case 39: //right
 			ship.setAcceleration(ACCELERATIONCONST);
 			break;
+		case 66: //B
+		case 98: //b
+			var deltatime = clock.getDelta();
+			//bullet = new Bullet(scene, ship.getPositionX(), ship.getPositionY(), 75);
+			//bullet.setAcceleration(ACCELERATIONCONST*5);
+			console.log("bullet");
+			Bullets["bullet" + bullets_counter] = new Bullet(scene, ship.getPositionX(), ship.getPositionY(), 75);
+			Bullets["bullet" + bullets_counter].setAcceleration(ACCELERATIONCONST*5);
+			bullets_counter++;
+			break;
+			
 	}
 }
 
@@ -139,7 +155,6 @@ function createScene() {
 	'use strict';
 	
 	scene = new THREE.Scene();
-	
 	scene.add(new THREE.AxisHelper(10));
 	
 	createBoard(boardWidth, boardHeight);
