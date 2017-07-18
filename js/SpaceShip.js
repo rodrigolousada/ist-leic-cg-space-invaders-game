@@ -3,11 +3,15 @@ const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST; //Acceler
 /*------------------------------------NAVE----------------------------*/
 class SpaceShip extends SpaceObject {
 	
-	constructor(scene,x,y,z) {
+	constructor(scene,x,y,z,shadow_flag) {
 		'use strict';
 		
 		super(scene);
-		this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+		this.basic_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true, shininess: 30, specular:0x111111});
+		this.lambert_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true});
+		
+		this.material = this.basic_material;
 		
 		this.addShipBody(0, 0, 0);
 		this.addFrontShip(0, 0, -20);
@@ -21,10 +25,8 @@ class SpaceShip extends SpaceObject {
 		//this.addSphere(this.radius);
 		
 		this.setPosition(x,y,z);
-	}
-	
-	toggleWireframe() {
-		this.material.wireframe = !this.material.wireframe;
+		
+		this.changeShadow(shadow_flag);
 	}
 	
 	//SHIP PARTS//

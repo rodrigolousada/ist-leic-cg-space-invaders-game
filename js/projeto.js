@@ -3,6 +3,8 @@ var scene, renderer, material, geometry, mesh, wireframe_flag = true; //basic
 var camera, perspectivecamera, perspectivecamera2, orthogonalcamera, width=500, height=300, cameraRatio = (width/height); //cameras
 var board, ship; //objects
 var boardWidth = width-20, boardHeight = height-20; //Board
+var sun, stars = [], sun_light_color = 0xffff99, stars_light_color = 0xffffff, sun_intensity = 1, stars_intensity = 0.3; //lights
+var shadow_flag = "gouraud", last_shadow_flag = shadow_flag; //shadows
 
 var objects = [];
 
@@ -31,7 +33,7 @@ function createBoard(width, height) {
 	
 	board = new THREE.Object3D();
 	
-	material = new THREE.MeshBasicMaterial({color: 0x006600, wireframe: true })
+	material = new THREE.MeshPhongMaterial({color: 0x006600, wireframe: true })
 	geometry = new THREE.CubeGeometry(width,2,height);
 	mesh = new THREE.Mesh(geometry, material);
 	
@@ -112,9 +114,39 @@ function onKeyDown(e) {
 			break;
 		case 66: //B
 		case 98: //b
-			objects.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25, wireframe_flag));
+			objects.push(new Bullet(scene, ship.getPositionX(), ship.getPositionY(), ship.getPositionZ() - 25, wireframe_flag, shadow_flag));
 			break;
-			
+		case 78: //N
+		case 110: //n
+			sun.toggleVisible();
+			break;
+		case 76: //L
+		case 108: //l
+			shadow_flag == "off" ? shadow_flag = last_shadow_flag : shadow_flag = "off";
+			scene.traverse(function (node) {
+				if (node instanceof SpaceObject) {
+					node.changeShadow(shadow_flag);
+				}
+			});
+			break;
+		case 71: //G
+		case 103: //g
+			if(shadow_flag!="off") {
+				shadow_flag == "gouraud" ? shadow_flag = "phong" : shadow_flag = "gouraud";
+				last_shadow_flag = shadow_flag;
+				scene.traverse(function (node) {
+					if (node instanceof SpaceObject) {
+						node.changeShadow(shadow_flag);
+					}
+				});
+			}
+			break;
+		case 67: //C
+		case 99: //c
+			for(var i = 0; i<stars.length; i++) {
+				stars[i].toggleVisible();
+			}
+			break;
 	}
 }
 
@@ -139,20 +171,20 @@ function createScene() {
 	'use strict';
 	
 	scene = new THREE.Scene();
-	scene.add(new THREE.AxisHelper(10));
+	//scene.add(new THREE.AxisHelper(10));
 	
 	createBoard(boardWidth, boardHeight);
 	
 	//Creating Objects//
-	ship = new SpaceShip(scene, 0, 0, 100);
-	objects.push(new Alien(scene, 150, 0, -50));
-	objects.push(new Alien(scene, 50, 0, -50));
-	objects.push(new Alien(scene, -50, 0, -50));
-	objects.push(new Alien(scene, -150, 0, -50));
-	objects.push(new Alien(scene, 150, 0, -100));
-	objects.push(new Alien(scene, 50, 0, -100));
-	objects.push(new Alien(scene, -50, 0, -100));
-	objects.push(new Alien(scene, -150, 0, -100));
+	ship = new SpaceShip(scene, 0, 0, 100, shadow_flag);
+	objects.push(new Alien(scene, 150, 0, -50, shadow_flag));
+	objects.push(new Alien(scene, 50, 0, -50, shadow_flag));
+	objects.push(new Alien(scene, -50, 0, -50, shadow_flag));
+	objects.push(new Alien(scene, -150, 0, -50, shadow_flag));
+	objects.push(new Alien(scene, 150, 0, -100, shadow_flag));
+	objects.push(new Alien(scene, 50, 0, -100, shadow_flag));
+	objects.push(new Alien(scene, -50, 0, -100, shadow_flag));
+	objects.push(new Alien(scene, -150, 0, -100, shadow_flag));
 }
 
 function createCameras() {
@@ -183,6 +215,23 @@ function createCameras() {
 	
 	//THIRD CAMERA - PERPECTIVE & MOVEL//
 	ship.addCamera(new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000));
+}
+
+function createLights() {
+	'use strict';
+	
+	//SUN
+	sun = new DirectionalStar(scene, sun_light_color, sun_intensity, 0, 150, boardHeight/2);
+	
+	//STARS
+	stars.push(new PointStar(scene, stars_light_color, stars_intensity, -boardWidth/4, 20, -boardHeight/4));
+	stars.push(new PointStar(scene, stars_light_color, stars_intensity, 0, 20, -boardHeight/4));
+	stars.push(new PointStar(scene, stars_light_color, stars_intensity, boardWidth/4, 20, -boardHeight/4));
+	stars.push(new PointStar(scene, stars_light_color, stars_intensity, boardWidth/4, 20, boardHeight/4));
+	stars.push(new PointStar(scene, stars_light_color, stars_intensity, -boardWidth/4, 20, boardHeight/4));
+	stars.push(new PointStar(scene, stars_light_color, stars_intensity, 0, 20, boardHeight/4));
+	stars.push(new PointStar(scene, stars_light_color, stars_intensity, boardWidth/4, 20, boardHeight/4));
+
 }
 
 /* ------------------------------------------------------------------------------------------- */
@@ -245,6 +294,7 @@ function init() {
 	
 	createScene();
 	createCameras();
+	createLights();
 	
 	render();
 	

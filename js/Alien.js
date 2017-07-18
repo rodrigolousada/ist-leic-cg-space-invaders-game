@@ -7,8 +7,15 @@ class Alien extends SpaceObject {
 		'use strict';
 		
 		super(scene);
-		this.material = new THREE.MeshBasicMaterial({ color: 2600544, wireframe: true });
-		this.claw_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+		this.basic_material = new THREE.MeshBasicMaterial({ color: 2600544, wireframe: true });
+		this.phong_material = new THREE.MeshPhongMaterial({ color: 2600544, wireframe: true,  shininess: 70, specular:0xffffff });
+		this.lambert_material = new THREE.MeshLambertMaterial({ color: 2600544, wireframe: true });
+		this.basic_claw_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+		this.phong_claw_material = new THREE.MeshPhongMaterial({ color: 0x00ff00, wireframe: true,  shininess: 70, specular:0xfffff });
+		this.lambert_claw_material = new THREE.MeshLambertMaterial({ color: 0x00ff00, wireframe: true });
+		
+		this.material = this.basic_material;
+		this.claw_material = this.basic_claw_material;
 		
 		this.addAlienBody(0, 0, -7);
 		this.addAlienSupport(8, 0, -2);
@@ -24,16 +31,31 @@ class Alien extends SpaceObject {
 		this.setSpeed(Math.random()*Math.PI*2, 20);
 
 		this.setPosition(x,y,z);
+		
+		this.changeShadow(shadow_flag);
 	}
 	
+	//MESH
 	toggleWireframe() {
-		this.material.wireframe = !this.material.wireframe;
-		this.claw_material.wireframe = !this.claw_material.wireframe;
+		super.toggleWireframe();
+		this.basic_claw_material.wireframe = !this.basic_claw_material.wireframe;
+		this.phong_claw_material.wireframe = !this.phong_claw_material.wireframe;
+		this.lambert_claw_material.wireframe = !this.lambert_claw_material.wireframe;
 	}
 	
+	changeShadow(shadow_flag) {
+		super.changeShadow(shadow_flag);
+		for(var i=this.children.length-2 ; i<this.children.length ;i++) {
+			if(shadow_flag=="phong") this.children[i].material = this.phong_claw_material;
+			else if(shadow_flag=="gouraud") this.children[i].material = this.lambert_claw_material;
+			else this.children[i].material = this.basic_claw_material;
+		}
+	}
+	
+	//ALIEN PARTS
 	addAlienBody(x, y, z){
 		'use strict';
-		var geometry = new THREE.SphereGeometry(8/*, 30, 60*/);
+		var geometry = new THREE.SphereGeometry(8, 30 /*, 60*/);
 		var mesh = new THREE.Mesh(geometry, this.material);
 		mesh.position.set(x, y, z);
 		this.add(mesh);

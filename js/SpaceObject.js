@@ -26,11 +26,35 @@ class SpaceObject extends THREE.Object3D {
 		this.acceleration_direction_x = 1;
 		this.acceleration_direction_z = 0;
 		
+		this.material;
+		this.basic_material;
+		this.phong_material;
+		this.lambert_material;
+		
 		scene.add(this);
 	}
 	
 	remove() {
 		scene.remove(this);
+	}
+	
+	//MESH
+	toggleVisible() {
+		this.visible=!this.visible;
+	}
+	
+	toggleWireframe() {
+		this.basic_material.wireframe = !this.basic_material.wireframe;
+		this.phong_material.wireframe = !this.phong_material.wireframe;
+		this.lambert_material.wireframe = !this.lambert_material.wireframe;
+	}
+	
+	changeShadow(shadow_flag) {
+		for(var i=0; i<this.children.length ;i++) {
+			if(shadow_flag=="phong") this.children[i].material = this.phong_material;
+			else if(shadow_flag=="gouraud") this.children[i].material = this.lambert_material;
+			else this.children[i].material = this.basic_material;
+		}
 	}
 	
 	//CAMERA
@@ -265,5 +289,8 @@ class SpaceObject extends THREE.Object3D {
 		this.position.x += (1/2)*this.speed_x*deltatime;
 		this.position.y += (1/2)*this.speed_y*deltatime;
 		this.position.z += (1/2)*this.speed_z*deltatime;
+		
+		
+		this.updateMatrix();
 	}
 }
