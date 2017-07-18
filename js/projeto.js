@@ -16,17 +16,20 @@ var clock, newTime, delta, speed=0, acceleration=0, direction = 0, caughtleft=0,
 function addWingSupport(obj, x, y, z) {
 	'use strict';
 	
-	geometry = new THREE.CubeGeometry(4, 4, 2);
+	geometry = new THREE.CubeGeometry(5, 2, 2);
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y - 3, z);
+	
 	obj.add(mesh);
 }
 
 function addFrontShip(obj, x, y, z){
 	'use strict';
 
-	geometry = new THREE.CylinderGeometry(1,8,10);
+	geometry = new THREE.CylinderGeometry(0,8,20);
+	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2) ) );
+	//geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, 0) );
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y, z);
@@ -36,7 +39,7 @@ function addFrontShip(obj, x, y, z){
 
 function addShipWing(obj, x, y, z) {
 	'use strict';
-	geometry = new THREE.CubeGeometry(8, 30, 2);
+	geometry = new THREE.CubeGeometry(8, 2, 20);
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y, z);
@@ -46,7 +49,9 @@ function addShipWing(obj, x, y, z) {
 
 function addShipBody(obj, x, y, z) {
 	'use strict';
-	geometry = new THREE.CylinderGeometry(8, 8, 30);
+	geometry = new THREE.CylinderGeometry(8, 8, 20);
+	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI / 2) ) );
+	//geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, 0 ) );
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y, z);
@@ -69,17 +74,17 @@ function createShip(x, y, z) {
 	'use strict';
 	
 	ship = new THREE.Object3D();
-	/*ship.userData { moving: true, step:0 };*/
+	//ship.userData { moving: true, step:0 };
 	
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	
 	addShipBody(ship, 0, 0, 0);
-	addFrontShip(ship,0, 20, 0);
-	addWingSupport(ship, -10, 0, 0);
-	addWingSupport(ship, 10, 0, 0);
-	addShipWing(ship, 16, -10,0);
-	addShipWing(ship, -16, -10,0);
-	addShipBullets(ship, 0, 15 ,10);
+	addFrontShip(ship,0, 0, -20);
+	addWingSupport(ship, -8, 0, 0);
+	addWingSupport(ship, 8, 0, 0);
+	addShipWing(ship, 13, -3,7);
+	addShipWing(ship, -13, -3,7);
+	addShipBullets(ship, 0, 10 ,-8);
 	
 	ship.position.set(x,y,z);
 	
@@ -133,13 +138,13 @@ function createMonster(x, y, z) {
 	monster = new THREE.Object3D();
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	
-	addAlienArm(monster, 13, 10, 8);
-	addAlienArm(monster, -13, 10, 8);
-	addAlienSupport(monster, 8, 8, 8);
-	addAlienSupport(monster, -8, 8, 8);
-	addAlienBody(monster, 0, 0, 0);
-	addAlienClaw(monster, 13, 10, 18);
-	addAlienClaw(monster, -13, 10, 18);
+	addAlienArm(monster, 13, 0, 5);
+    addAlienArm(monster, -13, 0, 5);
+    addAlienSupport(monster, 8, 0, 5);
+    addAlienSupport(monster, -8, 0, 5);
+    addAlienBody(monster, 0, 0, 0);
+    addAlienClaw(monster, 13, 0, 15);
+    addAlienClaw(monster, -13, 0, 15);
 	
 	monster.position.set(x,y,z);
 	
