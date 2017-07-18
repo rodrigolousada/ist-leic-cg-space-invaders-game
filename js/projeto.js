@@ -1,9 +1,9 @@
 /* global THREE*/
 
-var camera, perspectivecamera, ortogonalcamera, scene, renderer, material, geometry, mesh, board, alien, ship, monster;
+var camera, perspectivecamera, ortogonalcamera, scene, renderer, material, geometry, mesh, board, alien1, alien2, alien3, alien4, alien5, alien6, alien7, alien8, ship;
 var oldTime = 0;
-var boardWidth = 1300, boardHeight = 900, cameraRatio = (boardWidth/boardHeight);
-const ACCELERATIONCONST=100 , FRICTIONCOEF = (-0,5);
+var boardWidth = 500, boardHeight = 300, cameraRatio = (boardWidth/boardHeight);
+const ACCELERATIONCONST=100 , DEACCELERATIONCONST=4*ACCELERATIONCONST;
 
 var clock, newTime, delta, speed=0, acceleration=0, direction = 0, caughtleft=0, caughtright=0;
 
@@ -74,7 +74,6 @@ function createShip(x, y, z) {
 	'use strict';
 	
 	ship = new THREE.Object3D();
-	//ship.userData { moving: true, step:0 };
 	
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	
@@ -91,11 +90,11 @@ function createShip(x, y, z) {
 	scene.add(ship);
 }
 
-/*------------------------------------ALIEN--------------------------------*/
+/*------------------------------------ALIEN/MONSTER------------------------------*/
 
 function addAlienSupport(obj, x, y, z){
 	geometry = new THREE.CubeGeometry(4,2,2);
-	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: false});
+	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x,y,z);
 	obj.add(mesh);
@@ -104,7 +103,7 @@ function addAlienSupport(obj, x, y, z){
 function addAlienClaw(obj, x, y, z){
 	'use strict';
 
-	geometry = new THREE.CylinderGeometry(0,2,10,40);
+	geometry = new THREE.CylinderGeometry(0,2,10/*,40*/);
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI/2) );
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
@@ -115,7 +114,7 @@ function addAlienClaw(obj, x, y, z){
 
 function addAlienArm(obj, x, y, z){
 	'use strict';
-	geometry = new THREE.CylinderGeometry(3,3,10, 60);
+	geometry = new THREE.CylinderGeometry(3,3,10 /*,60*/);
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( 3*(Math.PI/2)) );
 	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
@@ -125,7 +124,7 @@ function addAlienArm(obj, x, y, z){
 
 function addAlienBody(obj, x, y, z){
 	'use strict';
-	geometry = new THREE.SphereGeometry(8,30,60);
+	geometry = new THREE.SphereGeometry(8,30 /*,60*/);
 	material = new THREE.MeshBasicMaterial({color: 2600544, wireframe: true});
 	mesh = new THREE.Mesh(geometry, material);
 	mesh.position.set(x, y, z);
@@ -135,7 +134,7 @@ function addAlienBody(obj, x, y, z){
 function createMonster(x, y, z) {
 	'use strict';
 	
-	monster = new THREE.Object3D();
+	var monster = new THREE.Object3D();
 	material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 	
 	addAlienArm(monster, 13, 0, 5);
@@ -149,22 +148,8 @@ function createMonster(x, y, z) {
 	monster.position.set(x,y,z);
 	
 	scene.add(monster);
-}
-
-function createAlien(x, y, z) {
-	'use strict';
 	
-	alien = new THREE.Object3D();
-	alien.userData = { jumping: true, step:0 };
-	
-	material = new THREE.MeshBasicMaterial({ color: 0xfffffff, wireframe: true })
-	geometry = new THREE.SphereGeometry(4, 10, 10);
-	mesh = new THREE.Mesh(geometry, material);
-	
-	alien.add(mesh);
-	alien.position.set(x, y, z);
-	
-	scene.add(alien);
+	return monster;
 }
 
 /*------------------------------------ESPAÇO DE JOGO----------------------------*/
@@ -182,6 +167,7 @@ function createBoard(width, height) {
 	board.position.set(0, -100, 0);
 	
 	scene.add(board);
+	
 }
 
 /* ------------------------------------------------------------------------------------------- */
@@ -193,16 +179,14 @@ function animate() {
 	
 	var deltatime = clock.getDelta();
 	
-	if (alien.userData.jumping) {
-		alien.userData.step += deltatime;
-		alien.position.y = Math.abs(30 * (Math.sin(alien.userData.step)));
-		alien.position.z = 15 * (Math.cos(alien.userData.step));
+	if(acceleration*speed<0) {
+		acceleration = (Math.abs(acceleration)/acceleration)*DEACCELERATIONCONST;
 	}
-	
+	else if(acceleration!=0 && speed==0) {
+		acceleration = (Math.abs(acceleration)/acceleration)*ACCELERATIONCONST;
+	}
 	speed+=(1/2)*acceleration*deltatime;
 	ship.position.x += speed*deltatime;
-	
-	//if(acceleration=0 || acceleration);//acabar
 	
 	/*if(ship.position.x<=(boardWidth/-(2)) && caughtleft==0) {
 		caughtleft++;
@@ -246,24 +230,6 @@ function onResize() {
 		camera.updateProjectionMatrix();
 	}
 }
-	
-	/*if(window.innerHeight > 0 && window.innerWidth > 0) {
-		var newCameraPorporcion = window.innerHeight / window.innerWidth;
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		if(newBoardPorporcion > boardPorporcion) {
-			camera.top = (boardWidth * newCameraPorporcion) / 2;
-			camera.bottom = (boardWidth * newCameraPorporcion) / (-2);
-			camera.left = (boardWidth) / (-2);
-			camera.right = (boardWith) / 2;
-		}
-		else if (newCameraPorporcion < boardPorporcion) {
-			camera.top = (boardWidth * cameraRatio) / 2;
-			camera.bottom = (boardWidth * cameraRatio) / (-2);
-			camera.left = ( boardWidth * cameraRatio / newCameraPorporcion) / (-2);
-			camera.right = ( boardWidth * cameraRatio / newCameraPorporcion) / 2;
-		}
-		camera.updateProjectionMatrix();
-	}*/
 
 function onKeyDown(e) {
 	'use strict';
@@ -279,9 +245,9 @@ function onKeyDown(e) {
 			break;
 		case 83: //S
 		case 115: //s
-			alien.userData.jumping = !alien.userData.jumping;
+			/*alien.userData.jumping = !alien.userData.jumping;
 			if(clock.running==true) clock.stop();
-			else clock.start();
+			else clock.start();*/
 			break;
 		case 86: //V
 		case 118: //v
@@ -336,9 +302,16 @@ function createScene() {
 	scene.add(new THREE.AxisHelper(10));
 	
 	createBoard(boardWidth, boardHeight);
-	createShip(0, 0, 0);
-	createAlien(0, 0, 15);
-	createMonster(0, 0, -50);
+	createShip(0, 0, 100);
+	alien1 = createMonster(150, 0, -50);
+	alien2 = createMonster(50, 0, -50);
+	alien3 = createMonster(-50, 0, -50);
+	alien4 = createMonster(-150, 0, -50);
+	alien5 = createMonster(150, 0, -100);
+	alien6 = createMonster(50, 0, -100);
+	alien7 = createMonster(-50, 0, -100);
+	alien8 = createMonster(-150, 0, -100);
+
 	
 }
 
