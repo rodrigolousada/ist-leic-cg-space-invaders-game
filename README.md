@@ -15,6 +15,7 @@ You can play it [here](http://web.ist.utl.pt/~ist181115/CG/)!
 **Final Grade:** 19.50/20
 
 <br>
+
 ## <u>**How to play:**</u>
 
 ### Moves:
@@ -22,6 +23,7 @@ You can play it [here](http://web.ist.utl.pt/~ist181115/CG/)!
 * <kbd>→</kbd>  Move Ship right
 * <kbd>B</kbd>  Fire  
 <br>
+
 * <kbd>S</kbd>  Pause/Continue
 * <kbd>R</kbd>  Restart
 
@@ -35,6 +37,7 @@ You can play it [here](http://web.ist.utl.pt/~ist181115/CG/)!
 * <kbd>C</kbd>  Toggle Stars lighting
 * <kbd>H</kbd>  Toggle Ship spotlight  
 <br>
+
 * <kbd>A</kbd>  Toggle **wireframe** mode
 * <kbd>L</kbd>  Toggle **lighting** calculation
 * <kbd>G</kbd>  Toggle Gouraud/Phong **shading**
