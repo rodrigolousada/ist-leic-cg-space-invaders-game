@@ -5,7 +5,7 @@ You can play it [here](http://web.ist.utl.pt/~ist181115/CG/)!
 
 ## <u>**Grades:**</u>
 **Language:** JavaScript  
-**Library:** [Three.js](www.threejs.org)
+**Library:** [Three.js](https://www.threejs.org)
 
 * **1st Entrega:** 5.5/6
 * **2nd Entrega:** 5.0/5
