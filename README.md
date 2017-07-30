@@ -3,12 +3,26 @@
 Project developed for Instituto Superior Técnico at Computer Graphics subject.  
 You can play it [here](http://web.ist.utl.pt/~ist181115/CG/)!
 
+## <u>**Grades:**</u>
+**Language:** JavaScript  
+**Library:** Three.js
+
+* **1st Entrega:** 5.5/6
+* **2nd Entrega:** 5.0/5
+* **3th Entrega:** 5.0/5
+* **4th Entrega:** 4.0/4
+
+**Final Grade:** 19.50/20
+
+
+
+
 ## <u>**How to play:**</u>
 
 ### Moves:
 * <kbd>←</kbd>  Move Ship left
 * <kbd>→</kbd>  Move Ship right
-* <kbd>B</kbd>  Fire
+* <kbd>B</kbd>  Fire  
 
 
 * <kbd>S</kbd>  Pause/Continue
@@ -22,7 +36,7 @@ You can play it [here](http://web.ist.utl.pt/~ist181115/CG/)!
 ### Lighting, Shading and Textures:
 * <kbd>N</kbd>  Toggle Sun lighting
 * <kbd>C</kbd>  Toggle Stars lighting
-* <kbd>H</kbd>  Toggle Ship spotlight
+* <kbd>H</kbd>  Toggle Ship spotlight  
 
 
 * <kbd>A</kbd>  Toggle **wireframe** mode
