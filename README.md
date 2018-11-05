@@ -7,10 +7,10 @@ You can play it [here](http://web.ist.utl.pt/~ist181115/CG/)!
 **Language:** JavaScript  
 **Library:** [Three.js](https://www.threejs.org)
 
-* **1st Entrega:** 5.5/6
-* **2nd Entrega:** 5.0/5
-* **3th Entrega:** 5.0/5
-* **4th Entrega:** 4.0/4
+* **1st Delivery:** 5.5/6
+* **2nd Delivery:** 5.0/5
+* **3th Delivery:** 5.0/5
+* **4th Delivery:** 4.0/4
 
 **Final Grade:** 19.50/20
 
